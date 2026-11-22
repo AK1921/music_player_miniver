@@ -1,0 +1,91 @@
+/* ==============================================================================
+   FROST OPAL DESIGN SYSTEM TOKENS
+   Theme: Frost Opal (Soft white & light lavender surfaces, purple & indigo accents)
+   ============================================================================== */
+
+:root,
+[data-theme="frost-opal"] {
+  /* Surfaces & Backgrounds */
+  --bg-app: #F8F9FD;
+  --bg-sidebar: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --bg-surface-raised: #F1F4FA;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFD;
+  --bg-player: rgba(255, 255, 255, 0.94);
+  --bg-modal: rgba(255, 255, 255, 0.98);
+  --backdrop: rgba(15, 23, 42, 0.45);
+
+  /* Primary & Accent Colors (Frost Opal Purple & Indigo) */
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-dark: #4338CA;
+  --primary-light: rgba(99, 102, 241, 0.08);
+  --primary-glow: rgba(99, 102, 241, 0.25);
+  --secondary: #8B5CF6;
+  --secondary-hover: #7C3AED;
+  --secondary-light: rgba(139, 92, 246, 0.1);
+  --accent-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+
+  /* Typography Colors */
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  /* Borders & Dividers */
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
+  --border-accent: rgba(99, 102, 241, 0.35);
+
+  /* Semantic Status Colors */
+  --success: #10B981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --danger: #EF4444;
+  --danger-light: rgba(239, 68, 68, 0.1);
+  --warning: #F59E0B;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --info: #06B6D4;
+  --info-light: rgba(6, 182, 212, 0.1);
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px -1px rgba(99, 102, 241, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -3px rgba(99, 102, 241, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 40px -8px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(99, 102, 241, 0.1);
+
+  /* Border Radiuses */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Layout Dimensions & Design Tokens */
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 76px;
+  --topbar-height: 72px;
+  --header-height: 72px;
+  --player-height: 90px;
+  --page-padding: 24px;
+  --card-radius: 14px;
+  --modal-radius: 20px;
+  --surface-color: #FFFFFF;
+  --primary-color: #6366F1;
+  --border-color: #E2E8F0;
+
+  /* Transitions */
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-Index Hierarchy */
+  --z-base: 1;
+  --z-sidebar: 900;
+  --z-topbar: 950;
+  --z-player: 1000;
+  --z-modal: 10000;
+  --z-lock: 20000;
+  --z-toast: 30000;
+}

@@ -1,0 +1,32 @@
+.library-dialog .modal-body {
+  display: grid;
+  gap: 0.65rem;
+}
+.library-dialog .form-label { margin: 0; }
+.library-dialog [role="status"]:empty { display: none; }
+.library-dialog .modal-actions-footer,
+#playlist-details-modal .modal-actions-footer { flex-wrap: wrap; }
+#playlists-container .playlist-card .card-actions-bar { flex-wrap: wrap; }
+#playlists-container .playlist-card .card-thumb-wrapper { aspect-ratio: 1; height: auto; }
+#playlists-container .playlist-card .card-thumb { width: 100%; height: 100%; object-fit: cover; }
+#playlists-container .playlist-card .card-actions-bar button { min-height: 36px; }
+#playlist-details-items-list .download-row { flex-wrap: wrap; }
+.sidebar-backdrop { pointer-events: none; }
+.sidebar-backdrop.active { pointer-events: auto; }
+.vault-passphrase-form { display: grid; gap: 0.6rem; max-width: 24rem; margin: 1rem auto; text-align: start; }
+.vault-passphrase-form .form-label { margin: 0; }
+.vault-file-card { padding: 0.8rem; overflow-wrap: anywhere; }
+.vault-file-card h3 { font-size: 1rem; }
+.vault-file-cover { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-md); margin-block-end: 0.55rem; }
+#settings-tab-voice > p, #settings-tab-security > p { margin-block: 0.5rem 1rem; color: var(--text-muted); }
+#studio-voice-command-list { display: grid; gap: 0.45rem; margin-block: 0.75rem; }
+.studio-voice-command { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 0.55rem; }
+.studio-voice-command input { min-width: 0; }
+#studio-voice-settings-status:not(:empty) { margin-block-start: 0.65rem; }
+.online-related { margin-block: 1.4rem; }
+.online-related h2 { font-size: 1.15rem; margin-block-end: 0.7rem; }
+.related-track-card { display: grid; gap: 0.35rem; text-align: start; color: var(--text-main); padding-block-end: 0.5rem; cursor: pointer; }
+.related-track-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.related-track-card :is(strong, span) { padding-inline: 0.65rem; overflow-wrap: anywhere; }
+.related-track-card span { color: var(--text-muted); }
+#player-youtube-link { font-size: 0.75rem; color: var(--primary); text-decoration: underline; }

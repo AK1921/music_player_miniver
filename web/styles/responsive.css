@@ -1,0 +1,207 @@
+/* ==============================================================================
+   RESPONSIVE DESIGN BREAKPOINTS (DESKTOP, LAPTOP, TABLET & MOBILE)
+   Viewports: 1920x1080, 1600x900, 1366x768, 1024x768, 768x1024, 390x844
+   ============================================================================== */
+
+/* Large Desktop / Laptops (1200px - 1440px) */
+@media (max-width: 1400px) {
+  .top-actions {
+    gap: 6px;
+  }
+  .top-actions .pill-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .search-box-container {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .health-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .search-box-container {
+    max-width: 340px;
+  }
+  #api-status-tag {
+    display: none;
+  }
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Tablets Landscape & Portrait (<= 992px) */
+@media (max-width: 992px) {
+  /* Off-canvas mobile navigation drawer */
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: min(290px, 85vw) !important;
+    z-index: 1050 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+    box-shadow: 0 0 50px rgba(15, 23, 42, 0.35) !important;
+  }
+
+  .sidebar-mobile-close-btn {
+    display: flex !important;
+  }
+
+  #btn-collapse-sidebar {
+    display: none !important;
+  }
+
+  .main-stage,
+  .main-content {
+    width: 100vw !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  /* Footer media player spans full width on mobile/tablet */
+  .bottom-player-bar {
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .sync-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .local-videos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Mobile & Small Tablet Devices (<= 768px) */
+@media (max-width: 768px) {
+  .top-bar {
+    height: auto !important;
+    min-height: 60px;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-box-container {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .top-actions {
+    margin-left: auto;
+    gap: 6px;
+  }
+
+  .top-actions .pill-btn span:not(.theme-color-dot) {
+    display: none;
+  }
+
+  .top-actions .pill-btn {
+    padding: 7px 10px;
+  }
+
+  .viewport-content {
+    padding: 16px 14px calc(var(--player-height) + 24px) 14px;
+  }
+
+  .bottom-player-bar {
+    padding: 8px 14px;
+    height: auto;
+    min-height: 76px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .player-track-info {
+    width: auto;
+    max-width: 60%;
+    flex: 1;
+  }
+
+  .player-center-controls {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .player-right-tools {
+    gap: 8px;
+  }
+
+  .folders-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .playback-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-overlay {
+    padding: 14px !important;
+  }
+
+  .modal-card {
+    max-height: 92vh;
+    width: 100%;
+  }
+
+  .theater-box {
+    padding: 14px !important;
+    max-height: 94vh;
+  }
+
+  .biometric-lock-card {
+    padding: 26px 18px !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Compact Smartphones (<= 480px) */
+@media (max-width: 480px) {
+  .folders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .local-videos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-tabs-row {
+    gap: 6px;
+  }
+
+  .filter-chip {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .player-track-meta {
+    max-width: 150px;
+  }
+
+  .player-track-title {
+    font-size: 13px;
+  }
+}

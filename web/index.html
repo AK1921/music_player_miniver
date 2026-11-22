@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="frost-opal">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AK Music Studio – Online Streaming, Downloads & Vault</title>
+  <meta name="description"
+    content="Production-grade responsive web audio player, YouTube stream explorer, offline download manager, and client-side private vault.">
+  <link rel="stylesheet" href="styles.css?v=studio-5">
+  <link rel="stylesheet" href="styles/palette-preview.css?v=sidebar-1">
+  <link rel="stylesheet" href="styles/library-controls.css?v=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+
+  <!-- App Layout -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeSidebarMobile()" aria-hidden="true"></div>
+  <div class="app-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-section">
+        <a href="#" class="brand-logo" onclick="switchTab('online'); return false;">
+          <div class="brand-badge">AK</div>
+          <div class="brand-text">
+            <div class="brand-title">AK Studio</div>
+            <div class="brand-sub">Audio & Media Engine</div>
+          </div>
+        </a>
+        <button class="collapse-toggle-btn" id="btn-collapse-sidebar" onclick="toggleSidebarCollapse()"
+          title="Collapse / Expand Sidebar (Ctrl+B)">
+          <i class="fa-solid fa-angles-left"></i>
+        </button>
+      </div>
+
+      <nav class="nav-scroll">
+        <div>
+          <div class="nav-group-title">Discover Online</div>
+          <ul class="nav-list">
+            <li>
+              <a class="nav-link active" id="nav-online" onclick="switchTab('online')">
+                <span class="nav-icon"><i class="fa-brands fa-youtube" style="color: #FF0000;"></i></span>
+                <span>Online Music</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="nav-group-title">My Offline Media</div>
+          <ul class="nav-list">
+            <li>
+              <!-- DEDICATED DOWNLOADED TAB -->
+              <a class="nav-link" id="nav-downloaded" onclick="switchTab('downloaded')">
+                <span class="nav-icon"><i class="fa-solid fa-circle-down"></i></span>
+                <span>Downloaded</span>
+                <span class="nav-badge downloaded-badge" id="sidebar-downloaded-count">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" id="nav-playlists" onclick="switchTab('playlists')">
+                <span class="nav-icon"><i class="fa-solid fa-list-ul"></i></span>
+                <span>Playlists</span>
+                <span class="nav-badge" id="sidebar-playlist-count">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" id="nav-local" onclick="switchTab('local')">
+                <span class="nav-icon"><i class="fa-solid fa-folder-tree"></i></span>
+                <span>Local Files & Gallery</span>
+                <span class="nav-badge" id="sidebar-local-count" style="background: var(--primary);">0</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="nav-group-title">Security & Tools</div>
+          <ul class="nav-list">
+            <li>
+              <a class="nav-link" onclick="openAiAssistantModal()">
+                <span class="nav-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                <span>AI Music Assistant</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" onclick="openSyncModal()">
+                <span class="nav-icon"><i class="fa-solid fa-arrows-rotate"></i></span>
+                <span>Cross-Device Sync</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" onclick="openLibraryHealthModal()">
+                <span class="nav-icon"><i class="fa-solid fa-heart-pulse"></i></span>
+                <span>Smart Library Health</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" id="nav-vault" onclick="switchTab('vault')">
+                <span class="nav-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <span>App Vault</span>
+                <span class="nav-badge" id="sidebar-vault-status">Locked</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" onclick="openApiModal()">
+                <span class="nav-icon"><i class="fa-brands fa-youtube"></i></span>
+                <span>YouTube API Status</span>
+              </a>
+            </li>
+            <li><a class="nav-link" href="#translator" onclick="openTranslationModal(); return false"><span class="nav-icon"><i class="fa-solid fa-language" aria-hidden="true"></i></span><span>Translator</span></a></li>
+            <li><a class="nav-link" href="#calculator" onclick="openCalculatorModal(); return false"><span class="nav-icon"><i class="fa-solid fa-calculator" aria-hidden="true"></i></span><span>Calculator</span></a></li>
+            <li>
+              <a class="nav-link" id="nav-settings" onclick="openSettingsModal()">
+                <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+                <span>Settings & Storage</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="vault-quick-card" onclick="switchTab('vault')">
+          <div class="vault-quick-icon">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div class="vault-quick-info">
+            <h4 id="vault-card-title">AES-256 Vault</h4>
+            <p>Encrypted browser storage</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Stage -->
+    <main class="main-stage">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button class="collapse-toggle-btn" onclick="toggleSidebarCollapse()" title="Toggle Sidebar"
+          style="margin-right: 8px;">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="search-box-container">
+          <form id="search-form" onsubmit="handleSearchSubmit(event)" class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-subtle);"></i>
+            <input type="text" id="global-search-input" class="search-input"
+              placeholder="Search all online songs, lyrical videos, artists on YouTube..." autocomplete="off"
+              oninput="handleSearchInputChange(event)" />
+            <button type="button" class="search-clear-btn" id="btn-search-clear" onclick="clearSearchInput()" title="Clear search" hidden>
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <button type="button" class="search-mic-icon-btn" id="btn-persistent-mic" onclick="togglePersistentMic()"
+              title="Voice Commands (Instant): Speak 'Play', 'Stop', 'Next', 'Scroll down', etc.">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button type="submit" class="search-btn">
+              <span>Search</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="top-actions">
+          <!-- Light & Gen-Z Theme Switcher Dropdown -->
+          <div class="theme-dropdown" style="position: relative;">
+            <button class="pill-btn" id="btn-theme-toggle" type="button" aria-label="Switch theme" aria-controls="theme-menu" aria-expanded="false" onclick="toggleThemeMenu(event)" title="Switch Theme">
+              <i class="fa-solid fa-palette" style="color: var(--primary);"></i>
+              <span id="current-theme-name">Frost Opal</span>
+              <i class="fa-solid fa-chevron-down" style="font-size: 11px;"></i>
+            </button>
+            <div class="theme-menu" id="theme-menu">
+              <div class="theme-menu-label"
+                style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); padding: 6px 12px 2px;">
+                Studio Light</div>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('frost-opal', 'Frost Opal')">
+                <span class="theme-color-dot" style="background: #4F46E5;"></span>
+                <span>Frost Opal (Default)</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('nordic-slate', 'Nordic Slate')">
+                <span class="theme-color-dot" style="background: #2563EB;"></span>
+                <span>Nordic Slate</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('champagne-gold', 'Champagne Ivory')">
+                <span class="theme-color-dot" style="background: #D97706;"></span>
+                <span>Champagne Ivory</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('mint-emerald', 'Mint Emerald')">
+                <span class="theme-color-dot" style="background: #059669;"></span>
+                <span>Mint Emerald</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('sakura-rose', 'Sakura Rose')">
+                <span class="theme-color-dot" style="background: #E11D48;"></span>
+                <span>Sakura Rose</span>
+              </button>
+
+              <div class="theme-menu-label"
+                style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); padding: 8px 12px 2px; border-top: 1px solid var(--border);">
+                Gen-Z OLED Dark</div>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('neon-cyberpunk', 'Neon Cyberpunk')">
+                <span class="theme-color-dot" style="background: #A855F7;"></span>
+                <span>Neon Cyberpunk</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('matrix-emerald', 'Matrix Emerald')">
+                <span class="theme-color-dot" style="background: #10B981;"></span>
+                <span>Matrix Emerald</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('midnight-oled', 'Midnight OLED')">
+                <span class="theme-color-dot" style="background: #06B6D4;"></span>
+                <span>Midnight OLED</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('sunset-ember', 'Sunset Ember')">
+                <span class="theme-color-dot" style="background: #F59E0B;"></span>
+                <span>Sunset Ember</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('ice-glitch', 'Ice Glitch')">
+                <span class="theme-color-dot" style="background: #38BDF8;"></span>
+                <span>Ice Glitch</span>
+              </button>
+              <button type="button" class="theme-opt-btn" onclick="setTheme('crimson-blood', 'Crimson Blood')">
+                <span class="theme-color-dot" style="background: #E11D48;"></span>
+                <span>Crimson Blood</span>
+              </button>
+
+              <div style="border-top: 1px solid var(--border); padding: 4px;">
+                <button type="button" class="theme-opt-btn" onclick="openCustomPaletteSettings()"
+                  style="font-weight: 700; color: var(--primary);">
+                  <i class="fa-solid fa-paintbrush" style="margin-right: 6px;"></i>
+                  <span>Custom Color Palette...</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="pill-btn" onclick="openSupabaseAccountModal()" aria-label="Cloud account"><i class="fa-solid fa-cloud" aria-hidden="true"></i><span id="top-supabase-sync-label">Cloud Sync</span></button>
+        </div>
+      </header>
+
+      <!-- Viewport Content Container -->
+      <div class="viewport-content" id="viewport">
+
+        <!-- 1. ONLINE MUSIC DISCOVERY VIEW -->
+        <div id="view-online">
+          <!-- YouTube-Style Category Filter Chips Row -->
+          <div class="filter-tabs-row" id="yt-chips-container" style="margin-bottom: 20px;">
+            <button class="filter-chip active" id="chip-all" onclick="filterOnline('all')">All</button>
+            <button class="filter-chip" id="chip-hindi" onclick="filterOnline('hindi')"><i class="fa-solid fa-music"
+                style="color: #EC4899; margin-right: 4px;"></i> Hindi Songs</button>
+            <button class="filter-chip" id="chip-telugu" onclick="filterOnline('telugu')"><i
+                class="fa-solid fa-compact-disc" style="color: #F59E0B; margin-right: 4px;"></i> Telugu Songs</button>
+            <button class="filter-chip" id="chip-trending" onclick="filterOnline('trending')"><i
+                class="fa-solid fa-fire-flame-curved" style="color: #FF0000; margin-right: 4px;"></i> Trending</button>
+            <button class="filter-chip" id="chip-video" onclick="filterOnline('video')"><i class="fa-solid fa-film"
+                style="margin-right: 4px;"></i> Music Videos</button>
+            <button class="filter-chip" id="chip-lyrics" onclick="filterOnline('lyrics')"><i
+                class="fa-solid fa-align-left" style="margin-right: 4px;"></i> Lyrical</button>
+            <button class="filter-chip" id="chip-pop" onclick="filterOnline('pop')">Pop</button>
+            <button class="filter-chip" id="chip-bollywood" onclick="filterOnline('bollywood')">Bollywood</button>
+            <button class="filter-chip" id="chip-edm" onclick="filterOnline('edm')">EDM</button>
+            <button class="filter-chip" id="chip-rock" onclick="filterOnline('rock')">Rock</button>
+            <button class="filter-chip" id="chip-hiphop" onclick="filterOnline('hiphop')">Hip-Hop</button>
+            <button class="filter-chip" id="chip-lofi" onclick="filterOnline('lofi')">Lo-Fi Chill</button>
+            <button class="filter-chip" id="chip-workout" onclick="filterOnline('workout')">Workout</button>
+            <button class="filter-chip" id="chip-devotional" onclick="filterOnline('devotional')">Devotional</button>
+          </div>
+
+          <!-- YouTube Music & Video Feed Cards Grid -->
+          <div class="content-section" id="online-feed">
+            <div class="section-head">
+              <div class="section-title">
+                <i class="fa-brands fa-youtube" style="color: #FF0000; font-size: 22px;"></i>
+                <span id="online-grid-title">YouTube Music & Video Feed</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span class="section-sub" id="online-grid-count">Showing releases</span>
+                <button class="primary-btn" onclick="openCreatePlaylistModal()" style="font-size: 11.5px; padding: 6px 12px; background: linear-gradient(135deg, #8B5CF6, #6366F1);" title="Create a new playlist folder for online music">
+                  <i class="fa-solid fa-folder-plus"></i> + New Playlist Folder
+                </button>
+                <button class="pill-btn" onclick="resetSearchAndShowAll()" style="font-size: 11px; padding: 4px 10px;">
+                  <i class="fa-solid fa-arrow-rotate-left"></i> Show All
+                </button>
+              </div>
+            </div>
+
+            <div class="online-search-status" id="online-search-status" role="status" hidden><span id="online-search-message"></span><a id="online-search-link" target="_blank" rel="noopener noreferrer" hidden>Search on YouTube</a></div>
+            <div class="cards-grid" id="online-cards-container">
+              <!-- Dynamically populated by app.js -->
+            </div>
+            <section id="online-related-section" class="online-related" aria-labelledby="online-related-title" hidden>
+              <h2 id="online-related-title">Related tracks</h2>
+              <div class="cards-grid" id="online-related-tracks"></div>
+            </section>
+          </div>
+        </div>
+
+        <!-- 2. DEDICATED DOWNLOADED TAB VIEW -->
+        <div id="view-downloaded" style="display: none;">
+          <div class="section-head" style="margin-bottom: 24px;">
+            <div>
+              <h1 class="hero-title" style="font-size: 28px; margin-bottom: 4px;">
+                <i class="fa-solid fa-circle-down" style="color: var(--success); margin-right: 8px;"></i>
+                Downloaded Media
+              </h1>
+              <p class="hero-sub" style="margin-bottom: 0;">
+                All offline songs, videos, and lyrical tracks downloaded from the online music explorer. Play anytime
+                without internet.
+              </p>
+            </div>
+            <button class="primary-btn" onclick="switchTab('online')" style="background: var(--success);">
+              <i class="fa-solid fa-plus"></i> Download More Songs
+            </button>
+          </div>
+
+          <!-- Downloaded Header Stats -->
+          <div class="downloaded-header-stats">
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <i class="fa-solid fa-music"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stat-downloaded-count">0</h3>
+                <p>SAVED OFFLINE TRACKS</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon indigo">
+                <i class="fa-solid fa-hard-drive"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stat-downloaded-size">0.0 MB</h3>
+                <p>BROWSER STORAGE USED</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Downloaded Filter Tabs -->
+          <div class="filter-tabs-row">
+            <button class="filter-chip active" id="dl-chip-all" onclick="filterDownloaded('all')">All
+              Downloaded</button>
+            <button class="filter-chip" id="dl-chip-audio" onclick="filterDownloaded('audio')">🎵 Audio Songs</button>
+            <button class="filter-chip" id="dl-chip-video" onclick="filterDownloaded('video')">🎬 Music Videos</button>
+            <button class="filter-chip" id="dl-chip-lyrics" onclick="filterDownloaded('lyrics')">📝 With Lyrics</button>
+          </div>
+
+          <label class="primary-btn import-audio-control"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Import Audio <input type="file" accept="audio/*,.m4a,.mp3,.wav,.flac,.ogg,.opus" multiple onchange="importOfflineAudio(this)"></label>
+          <label class="offline-filter"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="downloaded-search" type="search" placeholder="Search downloads" aria-label="Search downloads" oninput="renderDownloadedView()"></label>
+          <!-- Downloaded Items List -->
+          <div class="downloaded-list" id="downloaded-items-container">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+
+        <!-- 3. PLAYLISTS VIEW -->
+        <div id="view-playlists" style="display: none;">
+          <div class="section-head" style="margin-bottom: 24px;">
+            <div>
+              <h1 class="hero-title" style="font-size: 28px; margin-bottom: 4px;">Custom Playlists</h1>
+              <p class="hero-sub" style="margin-bottom: 0;">Separate collections for your online music, downloaded songs
+                & local tracks.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="primary-btn" onclick="openAiPlaylistModal()"
+                style="background: linear-gradient(135deg, #8B5CF6, #6366F1);">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Playlist Generator
+              </button>
+              <button class="secondary-btn" onclick="openCreatePlaylistModal()">
+                <i class="fa-solid fa-plus"></i> + New Playlist
+              </button>
+            </div>
+          </div>
+
+          <div class="cards-grid" id="playlists-container">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+
+        <!-- 4. LOCAL FILES & BULK UPLOAD VIEW -->
+        <div id="view-local" style="display: none;">
+          <div class="section-head" style="margin-bottom: 24px;">
+            <div>
+              <h1 class="hero-title" style="font-size: 28px; margin-bottom: 4px;">Local Media & Folders</h1>
+              <p class="hero-sub" style="margin-bottom: 0;">Upload your system's songs in bulk with cover art, manage
+                videos, images, and documents.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="secondary-btn" onclick="openLibraryHealthModal()"
+                title="Detect duplicates, missing covers, and clean tags">
+                <i class="fa-solid fa-heart-pulse" style="color: var(--primary);"></i> Library Health
+              </button>
+              <button class="secondary-btn" onclick="openCreateFolderModal()">
+                <i class="fa-solid fa-folder-plus"></i> + New Folder
+              </button>
+              <button class="primary-btn" onclick="openBulkUploadModal()">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Bulk Upload Songs
+              </button>
+            </div>
+          </div>
+
+          <!-- Folder Categories (All, Music & Songs, Videos, Gallery & Photos, PDFs & Docs + User Folders) -->
+          <div class="folders-grid" id="local-folders-grid">
+            <div class="folder-card active" id="fcard-all" onclick="filterLocalFolder('all')">
+              <div class="folder-icon"><i class="fa-solid fa-folder-open"></i></div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 700;">All Files</h4>
+                <p style="font-size: 11px; color: var(--text-muted);" id="local-count-all">0 files</p>
+              </div>
+            </div>
+            <div class="folder-card" id="fcard-audio" onclick="filterLocalFolder('audio')">
+              <div class="folder-icon" style="background: rgba(79, 70, 229, 0.15); color: var(--primary);">
+                <i class="fa-solid fa-music"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 700;">Music & Songs</h4>
+                <p style="font-size: 11px; color: var(--text-muted);" id="local-count-audio">0 songs</p>
+              </div>
+            </div>
+            <div class="folder-card" id="fcard-video" onclick="filterLocalFolder('video')">
+              <div class="folder-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                <i class="fa-solid fa-video"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 700;">Videos & Movies</h4>
+                <p style="font-size: 11px; color: var(--text-muted);" id="local-count-video">0 videos</p>
+              </div>
+            </div>
+            <div class="folder-card" id="fcard-image" onclick="filterLocalFolder('image')">
+              <div class="folder-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                <i class="fa-solid fa-images"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 700;">Gallery & Photos</h4>
+                <p style="font-size: 11px; color: var(--text-muted);" id="local-count-image">0 photos</p>
+              </div>
+            </div>
+            <div class="folder-card" id="fcard-document" onclick="filterLocalFolder('document')">
+              <div class="folder-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 700;">PDFs & Docs</h4>
+                <p style="font-size: 11px; color: var(--text-muted);" id="local-count-doc">0 docs</p>
+              </div>
+            </div>
+            <!-- Custom User Created Folders dynamically appended -->
+            <div id="custom-folders-container" style="display: contents;"></div>
+          </div>
+
+          <!-- Dynamic Local Media Content Display (Gallery Grid, Music Player, or Table) -->
+          <div id="local-content-display">
+            <!-- Dynamically populated by renderLocalFilesView() in app.js -->
+          </div>
+        </div>
+
+        <!-- 5. APP VAULT VIEW -->
+        <div id="view-vault" style="display: none;">
+          <!-- Vault Locked View -->
+          <div id="vault-locked-state">
+            <div class="vault-shield-wrap">
+              <div class="shield-disc">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h2 class="hero-title" style="font-size: 28px; margin-bottom: 8px;">AK Private Vault</h2>
+              <p class="hero-sub">Protect files in this browser with a vault passphrase.</p>
+              <form class="vault-passphrase-form" onsubmit="event.preventDefault(); unlockVault()">
+                <label class="form-label" for="vault-password-input">Vault Master Passphrase</label>
+                <div style="position: relative; margin-bottom: 12px;">
+                  <input type="password" class="form-input" id="vault-password-input" placeholder="Enter vault passcode (2003 or custom)..." required autocomplete="current-password" style="padding-right: 42px;">
+                  <button type="button" onclick="togglePassVisibility('vault-password-input', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Toggle visibility">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+                <div id="vault-confirm-group" hidden>
+                  <label class="form-label" for="vault-password-confirm">Confirm new passphrase</label>
+                  <input type="password" class="form-input" id="vault-password-confirm" autocomplete="new-password">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 6px;">
+                  <button type="submit" class="primary-btn" id="vault-unlock-button" style="padding: 11px 28px; font-weight: 700;">
+                    <i class="fa-solid fa-lock-open"></i> Unlock Vault
+                  </button>
+                  <button type="button" class="secondary-btn" onclick="lockVault()" style="padding: 11px 20px; font-weight: 700; color: #EF4444; border-color: rgba(239, 68, 68, 0.35);">
+                    <i class="fa-solid fa-lock"></i> Lock
+                  </button>
+                </div>
+              </form>
+              <div id="vault-error-msg" role="status" style="color: var(--danger); display: none;"></div>
+            </div>
+          </div>
+
+          <!-- Vault Unlocked View -->
+          <div id="vault-unlocked-state" style="display: none;">
+            <div class="section-head" style="margin-bottom: 24px;">
+              <div>
+                <div class="badge-offline"
+                  style="background: var(--success-light); color: var(--success); margin-bottom: 6px;">
+                  <i class="fa-solid fa-check"></i> Vault unlocked
+                </div>
+                <h1 class="hero-title" style="font-size: 28px; margin-bottom: 4px;">Private Vault Media</h1>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="secondary-btn" onclick="triggerVaultFileUpload()">
+                  <i class="fa-solid fa-file-circle-plus"></i> Add files
+                </button>
+                <button class="primary-btn" onclick="lockVault()" style="background: var(--danger);">
+                  <i class="fa-solid fa-lock"></i> Lock Vault
+                </button>
+              </div>
+            </div>
+            <input type="file" id="vault-file-picker" style="display: none;" onchange="handleVaultFileSelected(event)"
+              multiple />
+
+            <div class="cards-grid" id="vault-items-container">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- PERSISTENT BOTTOM PLAYER BAR -->
+  <footer class="bottom-player-bar" id="bottom-player-bar">
+    <!-- Left Track Details with Real-time Playing Visualizer Equalizer -->
+    <div class="player-track-info">
+      <div class="player-artwork-box" onclick="toggleTheaterVideo(true)" title="Click to view full video theater">
+        <img src="https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" id="player-artwork" class="player-artwork-img"
+          alt="Cover" />
+      </div>
+      <div class="player-track-meta">
+        <div style="display: flex; align-items: center;">
+          <div class="player-track-title" id="player-title">Select a track to play</div>
+          <!-- Animated equalizer wave bars indicating WHERE music is currently playing -->
+          <div class="now-playing-eq" id="player-playing-eq" style="display: none;">
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+          </div>
+        </div>
+        <div class="player-track-artist" id="player-artist">AK Audio Engine</div>
+        <a id="player-youtube-link" target="_blank" rel="noopener noreferrer" hidden>Open on YouTube</a>
+      </div>
+    </div>
+
+    <!-- Center Playback Controls & Progress Bar -->
+    <div class="player-center-controls">
+      <div class="control-buttons-row">
+        <button class="ctrl-btn" id="btn-shuffle" onclick="toggleShuffle()" title="Shuffle">
+          <i class="fa-solid fa-shuffle"></i>
+        </button>
+        <button class="ctrl-btn" onclick="playPrev()" title="Previous Track">
+          <i class="fa-solid fa-backward-step"></i>
+        </button>
+        <button class="ctrl-btn play-pause-btn" id="btn-play-pause" onclick="togglePlayPause()" title="Play / Pause">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        <button class="ctrl-btn" id="btn-stop-playback" onclick="stopPlayback()" title="Stop Playback" style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border-color: rgba(239, 68, 68, 0.3);">
+          <i class="fa-solid fa-stop"></i>
+        </button>
+        <button class="ctrl-btn" onclick="playNext()" title="Next Track">
+          <i class="fa-solid fa-forward-step"></i>
+        </button>
+        <button class="ctrl-btn" id="btn-repeat" onclick="toggleRepeat()" title="Repeat">
+          <i class="fa-solid fa-repeat"></i>
+        </button>
+      </div>
+
+      <div class="progress-bar-container">
+        <span class="time-label" id="current-time">0:00</span>
+        <div class="progress-track" id="progress-track" onclick="handleSeek(event)">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="time-label" id="total-duration">0:00</span>
+      </div>
+    </div>
+
+    <!-- Right Extra Tools (Sleep Timer, Equalizer, PiP, Cinema, Lyrics, Download, Volume) -->
+    <div class="player-right-tools">
+      <button class="ctrl-btn" id="btn-sleep-timer" onclick="openSleepTimerModal()"
+        title="Sleep Timer (Auto stop playback)">
+        <i class="fa-solid fa-moon"></i>
+        <span class="timer-badge" id="player-timer-badge" style="display:none;"></span>
+      </button>
+      <button class="ctrl-btn" id="btn-equalizer" onclick="openEqualizerModal()"
+        title="Advanced Audio Equalizer & Presets">
+        <i class="fa-solid fa-sliders"></i>
+      </button>
+      <button class="ctrl-btn" onclick="toggleLyricsDrawer()" title="View Timed Lyrics & Sing-along">
+        <i class="fa-solid fa-align-left"></i>
+      </button>
+      <button class="ctrl-btn" id="btn-watch-video" onclick="watchCurrentVideo()" title="Watch online video" hidden>
+        <i class="fa-solid fa-film"></i>
+      </button>
+      <button class="ctrl-btn" id="btn-player-download" onclick="downloadCurrentPlayingTrack()"
+        title="Download This Track">
+        <i class="fa-solid fa-circle-down"></i>
+      </button>
+      <div class="volume-wrapper">
+        <i class="fa-solid fa-volume-high" style="color: var(--text-muted); font-size: 14px;"></i>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="85"
+          oninput="setPlayerVolume(this.value)" />
+      </div>
+    </div>
+    <button class="btn-close-player" type="button" onclick="closeAudioPlayer()" aria-label="Close player" title="Close player"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+  </footer>
+
+  <!-- Hidden YouTube Iframe Anchor (Managed by YouTube IFrame API) -->
+  <div id="yt-player-host"></div>
+  <!-- Dedicated HTML5 Local Audio Player for Uploaded Songs & Offline Audio -->
+  <audio id="local-html-audio" preload="auto" style="display: none;"></audio>
+
+  <!-- 1. Sleek YouTube & Video Theater Player Modal + Floating PiP Mini Player -->
+  <div class="theater-container" id="theater-modal">
+    <div class="theater-box" id="theater-box">
+      <!-- Theater Header -->
+      <div class="theater-header">
+        <div class="theater-brand">
+          <i class="fa-brands fa-youtube" style="color: #FF0000; font-size: 19px;"></i>
+          <span class="theater-title" id="theater-video-title">YouTube Player</span>
+        </div>
+        <div class="theater-window-controls">
+          <button type="button" class="theater-tool-btn" id="theater-pip-toggle" onclick="togglePipMiniPlayer()" title="Picture-in-Picture Mode">
+            <i class="fa-solid fa-window-restore"></i> <span id="theater-pip-label">PiP</span>
+          </button>
+          <button type="button" class="theater-tool-btn" onclick="toggleTheaterFullscreen()" title="Fullscreen">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button type="button" class="theater-close-btn" onclick="closePipPlayer(event)" title="Close Player">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Viewport (Clean 16:9 player with native YouTube controls) -->
+      <div class="theater-viewport" id="theater-viewport-box">
+        <!-- Video element or YouTube stream dynamically loaded here -->
+      </div>
+
+      <!-- Compact PiP In-Window Controls Bar (Active in PiP mode) -->
+      <div class="pip-controls-bar" id="pip-controls-bar" style="display: none;">
+        <button type="button" class="pip-btn" onclick="togglePlayPause()" title="Play / Pause">
+          <i class="fa-solid fa-play" id="pip-play-icon"></i>
+        </button>
+        <button type="button" class="pip-btn" onclick="playNext()" title="Next Song in Playlist">
+          <i class="fa-solid fa-forward-step"></i>
+        </button>
+        <button type="button" class="pip-btn" onclick="togglePipMiniPlayer()" title="Expand to Theater">
+          <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+        </button>
+        <button type="button" class="pip-btn danger" onclick="closePipPlayer(event)" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Synchronized Lyrics Drawer -->
+  <div class="lyrics-drawer" id="lyrics-drawer">
+    <div class="drawer-head">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 800;" id="lyrics-track-title">Song Lyrics</h3>
+        <span style="font-size: 12px; color: var(--text-muted);" id="lyrics-track-artist">Artist</span>
+      </div>
+      <button class="close-x-btn" onclick="toggleLyricsDrawer(false)" title="Close Lyrics">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="drawer-body" id="lyrics-content-body" aria-live="polite">
+      <!-- Dynamically filled with interactive lyric lines -->
+    </div>
+    <div style="padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+      <button class="primary-btn" data-save-lyrics disabled onclick="downloadCurrentLyrics()" style="flex: 1; justify-content: center;">
+        <i class="fa-solid fa-download"></i> Save Lyrics (.txt)
+      </button>
+      <button class="cancel-btn" onclick="toggleLyricsDrawer(false)">
+        CLOSE
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Create Playlist Modal -->
+  <div class="modal-overlay" id="create-playlist-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-list-ul" style="color: var(--primary);"></i>
+          <span class="modal-title">New Playlist</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('create-playlist-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Playlist Name</label>
+          <input type="text" id="new-playlist-title" class="form-input" placeholder="e.g. My Favorites, Workout Mix..."
+            autofocus />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <input type="text" id="new-playlist-desc" class="form-input"
+            placeholder="e.g. Online hits and offline tracks" />
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="cancel-btn" onclick="closeModal('create-playlist-modal')">CANCEL</button>
+        <button class="confirm-btn" onclick="confirmCreatePlaylist()">CREATE PLAYLIST</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Add Track To Playlist Modal -->
+  <div class="modal-overlay" id="add-to-playlist-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+          <span class="modal-title">Add To Playlist</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('add-to-playlist-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" id="add-target-track-name">
+          Select target playlist:
+        </p>
+        <input type="text" id="add-playlist-search-input" class="form-input" placeholder="🔍 Search your playlists..." oninput="filterPlaylistOptions(this.value)" style="margin-bottom: 12px; font-size: 12.5px;">
+        <div id="add-playlist-options-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="secondary-btn" onclick="openCreatePlaylistModal(true)">
+          + New Playlist
+        </button>
+        <button class="cancel-btn" onclick="closeModal('add-to-playlist-modal')">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4b. Playlist Details & Tracks List Modal -->
+  <div class="modal-overlay" id="playlist-details-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-list-check" style="color: var(--primary); font-size: 20px;"></i>
+          <div>
+            <span class="modal-title" id="playlist-details-title">Playlist Songs</span>
+            <div style="font-size: 11px; color: var(--text-muted);" id="playlist-details-count">0 tracks</div>
+          </div>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('playlist-details-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="max-height: 420px; overflow-y: auto;">
+        <div id="playlist-details-items-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="secondary-btn" id="btn-edit-playlist-details">Edit playlist</button>
+        <button class="primary-btn" id="btn-play-all-from-details">
+          <i class="fa-solid fa-play"></i> Play All In Order
+        </button>
+        <button class="cancel-btn" onclick="closeModal('playlist-details-modal')">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Bulk Upload Songs & Files Modal -->
+  <div class="modal-overlay" id="bulk-upload-modal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i>
+          <span class="modal-title">Upload Local Songs & Media</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('bulk-upload-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Audio / Video / Image Files (Bulk allowed)</label>
+          <input type="file" id="bulk-file-input" class="form-input" multiple
+            accept="audio/*,video/*,image/*,.pdf,.doc,.txt" onchange="previewUploadFiles(event)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom Cover Artwork (Optional)</label>
+          <input type="file" id="bulk-cover-input" class="form-input" accept="image/*" />
+        </div>
+        <div id="upload-files-preview-list"
+          style="max-height: 140px; overflow-y: auto; font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="cancel-btn" onclick="closeModal('bulk-upload-modal')">CANCEL</button>
+        <button class="confirm-btn" onclick="executeBulkUpload()">UPLOAD TO LIBRARY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Rename / Edit File Modal -->
+  <div class="modal-overlay" id="edit-file-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-pencil" style="color: var(--primary);"></i>
+          <span class="modal-title">Rename File</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('edit-file-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">File Name</label>
+          <input type="text" id="edit-file-name-input" class="form-input" autofocus />
+          <label class="form-label" for="edit-file-cover">Cover image</label>
+          <input class="form-input" type="file" id="edit-file-cover" accept="image/png,image/jpeg,image/webp">
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="cancel-btn" onclick="closeModal('edit-file-modal')">CANCEL</button>
+        <button class="confirm-btn" onclick="saveFileRename(this)">SAVE CHANGES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6b. Create Custom Folder Modal -->
+  <div class="modal-overlay" id="create-folder-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-solid fa-folder-plus" style="color: var(--primary);"></i>
+          <span class="modal-title">Create New Folder</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('create-folder-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Folder Name</label>
+          <input type="text" id="new-folder-name-input" class="form-input"
+            placeholder="e.g. My Mixes, Gym Songs, Vacation, Docs..." autofocus
+            onkeydown="if(event.key==='Enter') confirmCreateFolder()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="new-folder-category-select" class="form-input">
+            <option value="audio">🎵 Music & Songs</option>
+            <option value="image">📸 Gallery & Photos</option>
+            <option value="video">🎬 Videos & Movies</option>
+            <option value="document">📄 PDFs & Documents</option>
+            <option value="all">📁 General Media</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="cancel-btn" onclick="closeModal('create-folder-modal')">CANCEL</button>
+        <button class="confirm-btn" onclick="confirmCreateFolder()">CREATE FOLDER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6c. Photo Lightbox Modal for Gallery & Photos -->
+  <div class="modal-overlay" id="photo-lightbox-modal" onclick="closeModal('photo-lightbox-modal')">
+    <div class="modal-card"
+      style="max-width: 820px; background: rgba(10, 10, 20, 0.96); border: 1px solid var(--border); padding: 18px;"
+      onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span id="lightbox-photo-title" style="font-weight: 700; color: #FFF; font-size: 15px;">Photo View</span>
+        <button class="close-x-btn" onclick="closeModal('photo-lightbox-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div
+        style="text-align: center; max-height: 520px; overflow: hidden; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); background: #000;">
+        <img id="lightbox-photo-img" src="" style="max-width: 100%; max-height: 520px; object-fit: contain;"
+          alt="Full view" />
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+        <span id="lightbox-photo-meta" style="font-size: 12px; color: var(--text-muted);">High Resolution Photo</span>
+        <a id="lightbox-download-link" href="" download="photo.jpg" class="primary-btn"
+          style="padding: 6px 16px; font-size: 12px;">
+          <i class="fa-solid fa-download"></i> Download Photo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. YouTube Data API Configuration Modal -->
+  <div class="modal-overlay" id="api-config-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <i class="fa-brands fa-youtube" style="color: #FF0000; font-size: 20px;"></i>
+          <span class="modal-title">YouTube Free API Engine</span>
+        </div>
+        <button class="close-x-btn" onclick="closeModal('api-config-modal')" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div
+          style="background: var(--primary-light); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 14px;">
+          <h4 style="font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">
+            <i class="fa-solid fa-circle-check"></i> Free Config Pre-Installed
+          </h4>
+          <p style="font-size: 12px; color: var(--text-main); line-height: 1.4;">
+            YouTube IFrame Engine and iTunes Free Audio Search are active out of the box with zero setup needed. If a
+            custom Google API key runs out of quota, the app automatically switches to the free smart catalog and
+            intimates you.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Custom YouTube Data API Key (Optional)</label>
+          <input type="text" id="user-youtube-api-key" class="form-input"
+            placeholder="AIzaSy... (Leave empty to use built-in free engine)" />
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="cancel-btn" onclick="closeModal('api-config-modal')">CANCEL</button>
+        <button class="confirm-btn" onclick="saveApiKey()">SAVE & VERIFY</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="studio-mods">
+    <!-- 8. Upgraded AI Music Assistant Modal -->
+    <div class="modal-overlay" id="ai-assistant-modal">
+      <div class="modal-card" style="max-width: 640px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: #A855F7; font-size: 22px;"></i>
+            <div>
+              <span class="modal-title">AI Music Assistant</span>
+              <div class="ai-modal-badge" style="margin-top: 3px;">
+                <i class="fa-solid fa-bolt"></i> SMART VIBE INTELLIGENCE
+              </div>
+            </div>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('ai-assistant-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="mod-intro">
+            Search naturally by mood, emotional state, or scenario. Remove matches you don't like with 1 tap.
+          </p>
+
+          <!-- Category 1: Vibes & Moods -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="mod-section-label">
+              <i class="fa-solid fa-headphones-simple"></i> Choose Mood & Emotion
+              <span class="mod-label-right"
+                style="font-size: 11px; color: var(--primary); font-weight: 700; text-transform: none; letter-spacing: 0;">Instant
+                Filter</span>
+            </label>
+            <div class="ai-mood-chips">
+              <button class="ai-mood-pill active" onclick="selectAiMood(this, 'happy')">😊 Happy & Euphoric</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'workout')">⚡ Hype & High-Energy</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'relaxing')">🌿 Chill & Serene</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'devotional')">🙏 Spiritual & Sacred</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'focus')">☕ Lo-Fi Study Beats</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'sad')">🌧 Heartbreak Melancholy</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'party')">🎉 Club Rave & EDM</button>
+              <button class="ai-mood-pill" onclick="selectAiMood(this, 'romantic')">❤️ Romantic Acoustic</button>
+            </div>
+          </div>
+
+          <!-- Custom Prompt Input with Clear/Delete Button -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="mod-section-label">
+              <i class="fa-solid fa-keyboard"></i> Ask Anything (Natural AI Prompt)
+            </label>
+            <div class="ai-prompt-row">
+              <div class="ai-search-input-box" style="flex: 1;">
+                <input type="text" id="ai-prompt-input" class="form-input"
+                  placeholder="e.g. Uplifting cinematic violin beats for late-night coding..."
+                  onkeydown="if(event.key==='Enter') executeAiMusicSearch()" style="padding-right: 36px;" />
+                <button type="button" class="ai-clear-btn" id="btn-clear-ai-prompt" onclick="clearAiPromptInput()"
+                  title="Clear prompt text">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+              </div>
+              <button class="ai-prompt-go" onclick="executeAiMusicSearch()" title="Generate AI Matches">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+              <button class="primary-btn" onclick="executeAiMusicSearch()"
+                style="background: linear-gradient(135deg, #8B5CF6, #6366F1); padding: 8px 18px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Matches
+              </button>
+            </div>
+          </div>
+
+
+          <section class="ai-recommendations" id="recommended-songs-section" aria-labelledby="recommendation-title">
+            <div class="recommendation-heading">
+              <div><h2 id="recommendation-title">Recommended for you</h2><p id="recommendation-context">Hindi &amp; Telugu Discovery</p></div>
+              <div class="recommendation-actions">
+                <button type="button" class="icon-action-btn" onclick="scrollRecommendedSlider(-1)" aria-label="Previous recommendations"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+                <button type="button" class="icon-action-btn" onclick="scrollRecommendedSlider(1)" aria-label="Next recommendations"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+                <button type="button" class="icon-action-btn" onclick="renderRecommendedSection()" aria-label="Refresh recommendations"><i class="fa-solid fa-rotate" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div id="recommended-cards-container" class="recommended-slider-wrapper" role="region" aria-label="Recommended tracks" tabindex="0">
+              <div id="recommended-songs-container" class="recommended-tracks-row"></div>
+            </div>
+          </section>
+
+          <!-- AI Matches List with individual Delete Button -->
+          <div id="ai-matches-section" style="margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span
+                style="font-size: 12px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">
+                Curated Matches (<span id="ai-matches-count">0</span>)
+              </span>
+              <div style="display: flex; gap: 8px;">
+                <button class="pill-btn" id="btn-ai-clear-all" onclick="clearAllAiMatches()"
+                  style="display: none; padding: 4px 10px; font-size: 11px; color: #EF4444; border-color: rgba(239,68,68,0.3);">
+                  <i class="fa-solid fa-trash-can"></i> Clear All
+                </button>
+                <button class="pill-btn" id="btn-ai-play-all" onclick="playAllAiMatches()"
+                  style="display: none; padding: 4px 10px; font-size: 11px; background: var(--primary); color: #FFF;">
+                  <i class="fa-solid fa-play"></i> Play All
+                </button>
+              </div>
+            </div>
+            <div id="ai-matches-list" class="ai-matches-container"
+              style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+              <!-- Dynamically populated with individual delete buttons -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="cancel-btn" onclick="closeModal('ai-assistant-modal')">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. AI Playlist Generator Modal -->
+    <div class="modal-overlay" id="ai-playlist-modal">
+      <div class="modal-card" style="max-width: 560px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: #8B5CF6; font-size: 20px;"></i>
+            <span class="modal-title">AI Playlist Generator</span>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('ai-playlist-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+            Create a personalized playlist tailored to your occasion, mood and preferences.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Activity / Occasion</label>
+            <select id="ai-gen-activity" class="form-input">
+              <option value="workout">Gym & Cardio Workout</option>
+              <option value="chill">Casual Evening Chill</option>
+              <option value="focus">Deep Study & Coding Focus</option>
+              <option value="meditation">Morning Meditation & Yoga</option>
+              <option value="drive">Midnight Highway Drive</option>
+              <option value="party">Weekend House Party</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Vibe & Mood</label>
+            <select id="ai-gen-mood" class="form-input">
+              <option value="energetic">Energetic & Powerful</option>
+              <option value="peaceful">Peaceful & Calming</option>
+              <option value="happy">Happy & Feel Good</option>
+              <option value="melancholic">Soulful & Melancholic</option>
+              <option value="devotional">Devotional & Spiritual</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Playlist Size</label>
+            <div style="display: flex; gap: 10px;">
+              <label class="radio-chip"><input type="radio" name="ai-size" value="5" /> 5 Tracks (Quick)</label>
+              <label class="radio-chip active"><input type="radio" name="ai-size" value="10" checked /> 10 Tracks
+                (Standard)</label>
+              <label class="radio-chip"><input type="radio" name="ai-size" value="15" /> 15 Tracks (Extended)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Custom Playlist Title (Optional)</label>
+            <input type="text" id="ai-gen-title" class="form-input" placeholder="e.g. Midnight Surge, Morning Zen..." />
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="cancel-btn" onclick="closeModal('ai-playlist-modal')">CANCEL</button>
+          <button class="confirm-btn" onclick="executeAiPlaylistGeneration()"
+            style="background: linear-gradient(135deg, #8B5CF6, #6366F1);">
+            <i class="fa-solid fa-sparkles"></i> GENERATE PLAYLIST
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Sleep Timer Modal -->
+    <div class="modal-overlay" id="sleep-timer-modal">
+      <div class="modal-card" style="max-width: 460px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-moon" style="color: #6366F1; font-size: 20px;"></i>
+            <span class="modal-title">Sleep Timer</span>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('sleep-timer-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+            Automatically pauses music when timer runs out so you can sleep peacefully.
+          </p>
+
+          <!-- Active Timer Status -->
+          <div id="sleep-timer-active-card"
+            style="display: none; background: var(--primary-light); border: 1px solid var(--border); padding: 12px; border-radius: var(--radius-md); margin-bottom: 14px; text-align: center;">
+            <span style="font-size: 12px; color: var(--primary); font-weight: 700;">ACTIVE COUNTDOWN</span>
+            <div id="sleep-timer-active-countdown"
+              style="font-size: 28px; font-weight: 900; color: var(--primary); margin: 4px 0;">00:00</div>
+            <button class="cancel-btn" onclick="cancelSleepTimer()"
+              style="padding: 4px 12px; font-size: 12px; background: var(--danger); color: #FFF; border: none; margin-top: 4px;">
+              Cancel Timer
+            </button>
+          </div>
+
+          <!-- Preset Buttons -->
+          <div class="timer-presets-grid">
+            <button class="timer-preset-btn" onclick="setSleepTimer(15)">15 Minutes</button>
+            <button class="timer-preset-btn" onclick="setSleepTimer(30)">30 Minutes</button>
+            <button class="timer-preset-btn" onclick="setSleepTimer(45)">45 Minutes</button>
+            <button class="timer-preset-btn" onclick="setSleepTimer(60)">60 Minutes</button>
+            <button class="timer-preset-btn" onclick="setSleepTimer('end_of_track')">End of Track</button>
+          </div>
+
+          <div class="form-group" style="margin-top: 14px;">
+            <label class="form-label">Or Custom Minutes</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="custom-timer-mins" class="form-input" min="1" max="300" placeholder="e.g. 25" />
+              <button class="primary-btn" onclick="setCustomSleepTimer()">Set Timer</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="cancel-btn" onclick="closeModal('sleep-timer-modal')">CANCEL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. Advanced Equalizer Modal -->
+    <div class="modal-overlay" id="equalizer-modal">
+      <div class="modal-card" style="max-width: 540px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-sliders" style="color: var(--primary); font-size: 20px;"></i>
+            <span class="modal-title">Advanced Audio Equalizer</span>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('equalizer-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- EQ Presets Row -->
+          <div class="form-group">
+            <label class="form-label">Sound Profile Presets</label>
+            <div class="eq-presets-row">
+              <button class="eq-preset-chip active" onclick="applyEqPreset('flat')">Flat</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('bass_boost')">Bass Boost</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('treble_boost')">Treble Boost</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('vocal')">Vocal Clarity</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('acoustic')">Acoustic</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('electronic')">Electronic / EDM</button>
+              <button class="eq-preset-chip" onclick="applyEqPreset('rock')">Rock</button>
+            </div>
+          </div>
+
+          <!-- 3-Band Sliders -->
+          <div class="eq-sliders-box">
+            <div class="eq-band-col">
+              <span class="eq-band-val" id="val-eq-bass">0 dB</span>
+              <input type="range" class="eq-vertical-slider" id="slider-eq-bass" min="-12" max="12" value="0" step="1"
+                oninput="updateEqBand('bass', this.value)" />
+              <span class="eq-band-title">Bass<br /><small style="color: var(--text-subtle);">60Hz</small></span>
+            </div>
+
+            <div class="eq-band-col">
+              <span class="eq-band-val" id="val-eq-mid">0 dB</span>
+              <input type="range" class="eq-vertical-slider" id="slider-eq-mid" min="-12" max="12" value="0" step="1"
+                oninput="updateEqBand('mid', this.value)" />
+              <span class="eq-band-title">Mid<br /><small style="color: var(--text-subtle);">1kHz</small></span>
+            </div>
+
+            <div class="eq-band-col">
+              <span class="eq-band-val" id="val-eq-treble">0 dB</span>
+              <input type="range" class="eq-vertical-slider" id="slider-eq-treble" min="-12" max="12" value="0" step="1"
+                oninput="updateEqBand('treble', this.value)" />
+              <span class="eq-band-title">Treble<br /><small style="color: var(--text-subtle);">10kHz</small></span>
+            </div>
+          </div>
+
+          <!-- Audio Effects Toggles -->
+          <div
+            style="background: var(--surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 16px; display: flex; justify-content: space-around;">
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+              <input type="checkbox" id="chk-3d-spatial" onchange="toggle3DSpatial(this.checked)" /> 3D Spatial Audio
+            </label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+              <input type="checkbox" id="chk-bass-ext" onchange="toggleBassExtender(this.checked)" /> Deep Sub-Bass
+            </label>
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="secondary-btn" onclick="applyEqPreset('flat')">RESET TO FLAT</button>
+          <button class="confirm-btn" onclick="closeModal('equalizer-modal')">APPLY & CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. Cross-Device Sync Modal -->
+    <div class="modal-overlay" id="cross-sync-modal">
+      <div class="modal-card" style="max-width: 580px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-arrows-rotate" style="color: var(--primary); font-size: 20px;"></i>
+            <span class="modal-title">Cross-Device Synchronization</span>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('cross-sync-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="mod-intro">
+            Seamlessly sync your playlists, favorites, and listening history between Web Studio and the Android (Expo)
+            application.
+          </p>
+
+          <!-- Sync Cards -->
+          <div class="sync-grid">
+            <!-- Export Section -->
+            <div class="sync-card">
+              <div class="sync-card-head">
+                <div class="sync-card-icon" style="background: var(--primary-light); color: var(--primary);">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                </div>
+                <span class="sync-card-title">Export To Android</span>
+              </div>
+              <p>
+                Generate a portable sync token with all your playlists, favorites, and history.
+              </p>
+              <button class="primary-btn" onclick="exportSyncToken()"
+                style="width: 100%; justify-content: center; margin-top: auto;">
+                <i class="fa-solid fa-copy"></i> Generate & Copy Token
+              </button>
+            </div>
+
+            <!-- Import Section -->
+            <div class="sync-card">
+              <div class="sync-card-head">
+                <div class="sync-card-icon" style="background: var(--success-light); color: var(--success);">
+                  <i class="fa-solid fa-arrow-down-to-bracket"></i>
+                </div>
+                <span class="sync-card-title">Import From Android</span>
+              </div>
+              <p>
+                Paste the sync token generated by your Android app to merge playlists.
+              </p>
+              <div class="sync-token-row">
+                <input type="text" id="import-sync-token-input" class="form-input"
+                  placeholder="Paste AK-SYNC token..." />
+                <button class="confirm-btn" onclick="importSyncToken()" style="background: #10B981;">
+                  <i class="fa-solid fa-check-double"></i> Import
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="sync-status-banner"
+            style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-main);">Cloud Sync Status</span>
+              <p style="font-size: 11px; color: var(--text-muted); margin: 0;" id="sync-last-time">Last Synced: Just now
+              </p>
+            </div>
+            <button class="secondary-btn" onclick="refreshCloudSync()" style="font-size: 11px; padding: 4px 10px;">
+              <i class="fa-solid fa-rotate"></i> Sync Cloud
+            </button>
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="cancel-btn" onclick="closeModal('cross-sync-modal')">CANCEL</button>
+          <button class="confirm-btn" onclick="closeModal('cross-sync-modal')">DONE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. Smart Music Library Health & Diagnostics Modal -->
+    <div class="modal-overlay" id="library-health-modal">
+      <div class="modal-card" style="max-width: 600px;">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-heart-pulse" style="color: #EF4444; font-size: 20px;"></i>
+            <span class="modal-title">Smart Music Library Health</span>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('library-health-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="mod-intro">
+            Automatically detect duplicate tracks, missing artwork, and unformatted metadata with 1-click fixes.
+          </p>
+
+          <label class="mod-section-label">
+            <i class="fa-solid fa-heart-pulse"></i> Diagnostics
+            <span class="mod-label-right"
+              style="font-size: 11px; color: var(--success); font-weight: 700; text-transform: none; letter-spacing: 0;">1-Click
+              Fixes</span>
+          </label>
+          <div class="health-cards-grid">
+            <!-- Duplicates Card -->
+            <div class="health-card">
+              <div class="health-card-head">
+                <div class="health-icon" style="background: rgba(239,68,68,0.15); color: #EF4444;">
+                  <i class="fa-solid fa-clone"></i>
+                </div>
+                <div>
+                  <h4>Duplicate Tracks</h4>
+                  <p id="health-duplicate-count">Scanning...</p>
+                </div>
+              </div>
+              <button class="secondary-btn" onclick="autoFixDuplicates()" id="btn-fix-duplicates">
+                <i class="fa-solid fa-trash"></i> Remove Duplicates
+              </button>
+            </div>
+
+            <!-- Missing Artwork Card -->
+            <div class="health-card">
+              <div class="health-card-head">
+                <div class="health-icon" style="background: rgba(245,158,11,0.15); color: #F59E0B;">
+                  <i class="fa-solid fa-image"></i>
+                </div>
+                <div>
+                  <h4>Missing Artwork</h4>
+                  <p id="health-artwork-count">Scanning...</p>
+                </div>
+              </div>
+              <button class="secondary-btn" onclick="autoFixMissingArtwork()" id="btn-fix-artwork">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Assign Covers
+              </button>
+            </div>
+
+            <!-- Incorrect Metadata Card -->
+            <div class="health-card">
+              <div class="health-card-head">
+                <div class="health-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
+                  <i class="fa-solid fa-tags"></i>
+                </div>
+                <div>
+                  <h4>Messy File Tags</h4>
+                  <p id="health-metadata-count">Scanning...</p>
+                </div>
+              </div>
+              <button class="secondary-btn" onclick="autoFixMetadata()" id="btn-fix-metadata">
+                <i class="fa-solid fa-spell-check"></i> Clean & Beautify Titles
+              </button>
+            </div>
+          </div>
+
+          <button class="health-scan-btn" onclick="scanLibraryHealth()" style="margin-top: 14px;">
+            <i class="fa-solid fa-stethoscope"></i> Re-Scan Library
+          </button>
+        </div>
+        <div class="modal-actions-footer">
+          <button class="cancel-btn" onclick="closeModal('library-health-modal')">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. SETTINGS, STORAGE ANALYZER & GEN-Z PALETTES MODAL -->
+    <div class="modal-overlay" id="settings-modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-gear" style="color: var(--primary); font-size: 22px;"></i>
+            <div>
+              <span class="modal-title">Studio Settings & Storage</span>
+              <span style="font-size: 11px; color: var(--text-muted); display: block;">Storage quota, biometric security
+                & Gen-Z themes</span>
+            </div>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('settings-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Settings Tabs -->
+          <div class="settings-tabs-header">
+            <button class="settings-tab-btn active" id="tab-btn-profile" onclick="switchSettingsTab('profile')">
+              <i class="fa-solid fa-user-gear"></i> Profile & Account
+            </button>
+            <button class="settings-tab-btn" id="tab-btn-storage" onclick="switchSettingsTab('storage')">
+              <i class="fa-solid fa-hard-drive"></i> Storage Leftover
+            </button>
+            <button class="settings-tab-btn" id="tab-btn-palettes" onclick="switchSettingsTab('palettes')">
+              <i class="fa-solid fa-palette"></i> Color Palettes
+            </button>
+            <button class="settings-tab-btn" id="tab-btn-security" onclick="switchSettingsTab('security')">
+              <i class="fa-solid fa-fingerprint"></i> App Security
+            </button>
+            <button type="button" class="settings-tab-btn" id="tab-btn-voice" onclick="switchSettingsTab('voice')">
+              <i class="fa-solid fa-microphone" aria-hidden="true"></i> Voice commands
+            </button>
+          </div>
+
+          <!-- Tab 0: Profile & Account Settings -->
+          <div id="settings-tab-profile" class="settings-tab-content">
+            <div style="background: var(--bg-surface-secondary, rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px;">
+              <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-id-badge" style="color: var(--primary);"></i> User Profile & Sidebar Branding
+              </h3>
+              <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <div style="position: relative; text-align: center;">
+                  <div id="profile-avatar-preview" onclick="document.getElementById('profile-avatar-file-input').click()" style="width: 84px; height: 84px; border-radius: 50%; border: 3px solid var(--primary); background: linear-gradient(135deg, var(--primary), var(--accent, #ec4899)); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.35);" title="Click to Upload Profile Photo">
+                    <span id="profile-avatar-initials" style="font-size: 28px; font-weight: 800; color: #FFFFFF;">AK</span>
+                    <img id="profile-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                  <button type="button" class="pill-btn" onclick="document.getElementById('profile-avatar-file-input').click()" style="margin-top: 8px; font-size: 11px; padding: 4px 10px;">
+                    <i class="fa-solid fa-camera"></i> Change Avatar
+                  </button>
+                  <input type="file" id="profile-avatar-file-input" accept="image/*" style="display: none;" onchange="handleProfileAvatarUpload(event)">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                  <label for="profile-user-name-input" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Studio Title / Username:</label>
+                  <input type="text" id="profile-user-name-input" class="form-input" placeholder="AK Studio" oninput="updateProfileUserName(this.value)" style="margin-bottom: 8px;">
+                  <span style="font-size: 11.5px; color: var(--text-muted);">This name instantly reflects on the top sidebar brand header.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Update Form with 3 Fields -->
+            <div style="background: var(--bg-surface-secondary, rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px;">
+              <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-shield-halved" style="color: #10B981;"></i> Update Account Password
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 16px;">
+                Enter your current master password to verify, then specify and confirm your new password.
+              </p>
+              <form id="profile-password-form" onsubmit="event.preventDefault(); updateProfilePassword();" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label for="profile-current-pass" style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Current Password:</label>
+                    <span id="profile-otp-hint" style="font-size: 11px; color: #10B981; font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 1px 8px; border-radius: 4px;"></span>
+                  </div>
+                  <div style="position: relative;">
+                    <input type="password" id="profile-current-pass" class="form-input" placeholder="Enter your current password" required style="padding-right: 40px;">
+                    <button type="button" onclick="togglePassVisibility('profile-current-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Toggle visibility">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label for="profile-new-pass" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">New Password:</label>
+                  <div style="position: relative;">
+                    <input type="password" id="profile-new-pass" class="form-input" placeholder="Enter new secure password" required minlength="4" style="padding-right: 40px;">
+                    <button type="button" onclick="togglePassVisibility('profile-new-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Toggle visibility">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label for="profile-confirm-pass" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Confirm New Password:</label>
+                  <div style="position: relative;">
+                    <input type="password" id="profile-confirm-pass" class="form-input" placeholder="Re-type new password to confirm" required minlength="4" style="padding-right: 40px;">
+                    <button type="button" onclick="togglePassVisibility('profile-confirm-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Toggle visibility">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div id="profile-password-status" style="font-size: 12.5px; font-weight: 600; min-height: 18px;" role="status"></div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                  <button type="submit" class="primary-btn" style="padding: 10px 20px;">
+                    <i class="fa-solid fa-check"></i> Update Password
+                  </button>
+                  <button type="button" class="secondary-btn" onclick="lockAppSessionNow()" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.35);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out / Lock Session
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Tab 1: Storage Leftover Analyzer -->
+          <div id="settings-tab-storage" class="settings-tab-content" style="display: none;">
+            <div class="storage-gauge-card">
+              <div class="storage-gauge-top">
+                <div>
+                  <div class="storage-used-label">Application Storage Used</div>
+                  <div class="storage-used-value">
+                    <span id="storage-used-display">—</span> <span id="storage-quota-display"></span>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="storage-free-label">Available Left Over</div>
+                  <div class="storage-free-value" id="storage-leftover-display">
+                    4.65 GB Free
+                  </div>
+                </div>
+              </div>
+
+              <!-- Segmented Progress Bar -->
+              <div class="storage-bar-outer">
+                <div class="storage-bar-audio" id="bar-storage-audio" style="width: 25%;" title="Audio Tracks (125 MB)">
+                </div>
+                <div class="storage-bar-vault" id="bar-storage-vault" style="width: 38%;"
+                  title="App Vault Encrypted (190 MB)"></div>
+                <div class="storage-bar-cache" id="bar-storage-cache" style="width: 7%;"
+                  title="Artwork & Temp Cache (33 MB)"></div>
+              </div>
+
+              <!-- Legend Grid -->
+              <div class="storage-legend-grid">
+                <div class="storage-legend-item">
+                  <span class="storage-dot" style="background: #8B5CF6;"></span>
+                  <span>Downloaded Songs & Audio: <strong id="storage-val-audio">125 MB</strong></span>
+                </div>
+                <div class="storage-legend-item">
+                  <span class="storage-dot" style="background: #EC4899;"></span>
+                  <span>Encrypted App Vault: <strong id="storage-val-vault">190 MB</strong></span>
+                </div>
+                <div class="storage-legend-item">
+                  <span class="storage-dot" style="background: #06B6D4;"></span>
+                  <span>Artwork & Waveform Cache: <strong id="storage-val-cache">33 MB</strong></span>
+                </div>
+                <div class="storage-legend-item">
+                  <span class="storage-dot" style="background: #10B981;"></span>
+                  <span>Unallocated Browser Storage: <strong id="storage-val-free">4.65 GB</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cache-clean-card">
+              <div>
+                <h5>Optimize & Clean Temporary Cache</h5>
+                <p>Safely purge temporary audio blobs and preview thumbnails. Your songs and vault remain untouched.</p>
+              </div>
+              <button class="secondary-btn" onclick="cleanTempStorageCache()"
+                style="padding: 7px 14px; font-size: 12px; white-space: nowrap;">
+                <i class="fa-solid fa-broom"></i> Clean Cache
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 2: Gen-Z Color Palettes -->
+          <div id="settings-tab-palettes" class="settings-tab-content" style="display: none;">
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px;">
+              Choose a vibrant Gen-Z aesthetic scheme. Theme applies instantly to all components and player visualizers.
+            </p>
+            <div class="palettes-grid">
+              <div class="palette-card active" data-pal="neon-cyberpunk" onclick="applyColorPalette('neon-cyberpunk')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #A855F7;"></span>
+                  <span class="palette-swatch-circle" style="background: #EC4899;"></span>
+                  <span class="palette-swatch-circle" style="background: #131326;"></span>
+                </div>
+                <span class="palette-name">Neon Cyberpunk</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Violet & Hot Pink</span>
+              </div>
+
+              <div class="palette-card" data-pal="matrix-emerald" onclick="applyColorPalette('matrix-emerald')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #10B981;"></span>
+                  <span class="palette-swatch-circle" style="background: #06B6D4;"></span>
+                  <span class="palette-swatch-circle" style="background: #0B1D16;"></span>
+                </div>
+                <span class="palette-name">Matrix Emerald</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Hyper Mint & Teal</span>
+              </div>
+
+              <div class="palette-card" data-pal="midnight-oled" onclick="applyColorPalette('midnight-oled')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #06B6D4;"></span>
+                  <span class="palette-swatch-circle" style="background: #3B82F6;"></span>
+                  <span class="palette-swatch-circle" style="background: #030712;"></span>
+                </div>
+                <span class="palette-name">Midnight OLED</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Pure Deep Carbon</span>
+              </div>
+
+              <div class="palette-card" data-pal="sunset-ember" onclick="applyColorPalette('sunset-ember')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #F59E0B;"></span>
+                  <span class="palette-swatch-circle" style="background: #EF4444;"></span>
+                  <span class="palette-swatch-circle" style="background: #20130C;"></span>
+                </div>
+                <span class="palette-name">Sunset Ember</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Solar Amber & Coral</span>
+              </div>
+
+              <div class="palette-card" data-pal="ice-glitch" onclick="applyColorPalette('ice-glitch')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #38BDF8;"></span>
+                  <span class="palette-swatch-circle" style="background: #818CF8;"></span>
+                  <span class="palette-swatch-circle" style="background: #111E33;"></span>
+                </div>
+                <span class="palette-name">Ice Glitch</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Frost Blue & Lavender</span>
+              </div>
+
+              <div class="palette-card" data-pal="crimson-blood" onclick="applyColorPalette('crimson-blood')">
+                <div class="palette-preview-colors">
+                  <span class="palette-swatch-circle" style="background: #E11D48;"></span>
+                  <span class="palette-swatch-circle" style="background: #F43F5E;"></span>
+                  <span class="palette-swatch-circle" style="background: #22070D;"></span>
+                </div>
+                <span class="palette-name">Crimson Blood</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Deep Scarlet & Flame</span>
+              </div>
+            </div>
+
+
+            <section class="custom-palette-box palette-editor" id="custom-palette-editor" aria-labelledby="custom-palette-title">
+              <h3 id="custom-palette-title">Custom Color Palette</h3>
+              <p>Edit the colors and check the preview before applying them to Studio.</p>
+              <div class="palette-workbench">
+                <figure class="palette-preview" aria-labelledby="palette-preview-title">
+                  <figcaption id="palette-preview-title">Live preview</figcaption>
+                  <div class="palette-preview-screen" id="palette-preview" data-theme="custom">
+                    <div class="palette-preview-sidebar" data-palette-area="sidebar">
+                      <strong>Studio</strong>
+                      <span class="palette-preview-nav-active">Online</span>
+                      <span>Downloads</span>
+                      <span>Playlists</span>
+                    </div>
+                    <div class="palette-preview-header" data-palette-area="surface">
+                      <strong>Studio</strong><span class="palette-preview-search" data-palette-area="primary">Search</span>
+                    </div>
+                    <div class="palette-preview-feed" data-palette-area="bg">
+                      <div class="palette-preview-feed-head"><strong>Online Music</strong></div>
+                      <div class="palette-preview-cards" data-palette-cards></div>
+                    </div>
+                    <div class="palette-preview-player">
+                      <span class="palette-preview-play" data-palette-area="primary" aria-label="Play">▶</span>
+                      <span class="palette-preview-progress" data-palette-area="accent"></span>
+                    </div>
+                  </div>
+                </figure>
+                <form class="palette-controls" id="custom-palette-form" novalidate>
+                  <label for="custom-palette-paste-input">Paste hex codes or a Coolors link</label>
+                  <div class="palette-paste">
+                    <input type="text" class="form-input" id="custom-palette-paste-input" placeholder="#6366F1 #EC4899 #0F172A #1E293B" aria-describedby="palette-paste-order" autocomplete="off" spellcheck="false">
+                    <button type="button" class="secondary-btn" data-palette-load>Load codes</button>
+                  </div>
+                  <small id="palette-paste-order">Order: Primary, Accent, Background, Card surface, Sidebar (optional)</small>
+                  <div class="palette-fields">
+                    <div class="palette-field" data-palette-field="primary">
+                      <label for="cp-hex-primary">Primary</label>
+                      <small id="cp-help-primary">Search and play buttons</small>
+                      <div class="palette-field-inputs">
+                        <input type="color" id="cp-color-primary" value="#6366F1" aria-label="Primary color picker">
+                        <input type="text" class="form-input" id="cp-hex-primary" value="#6366F1" aria-describedby="cp-help-primary" spellcheck="false" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="palette-field" data-palette-field="accent">
+                      <label for="cp-hex-accent">Accent</label>
+                      <small id="cp-help-accent">Player progress gradient</small>
+                      <div class="palette-field-inputs">
+                        <input type="color" id="cp-color-accent" value="#EC4899" aria-label="Accent color picker">
+                        <input type="text" class="form-input" id="cp-hex-accent" value="#EC4899" aria-describedby="cp-help-accent" spellcheck="false" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="palette-field" data-palette-field="bg">
+                      <label for="cp-hex-bg">Background</label>
+                      <small id="cp-help-bg">Space behind track cards</small>
+                      <div class="palette-field-inputs">
+                        <input type="color" id="cp-color-bg" value="#0F172A" aria-label="Background color picker">
+                        <input type="text" class="form-input" id="cp-hex-bg" value="#0F172A" aria-describedby="cp-help-bg" spellcheck="false" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="palette-field" data-palette-field="surface">
+                      <label for="cp-hex-surface">Card surface</label>
+                      <small id="cp-help-surface">Track cards and header</small>
+                      <div class="palette-field-inputs">
+                        <input type="color" id="cp-color-surface" value="#1E293B" aria-label="Card surface color picker">
+                        <input type="text" class="form-input" id="cp-hex-surface" value="#1E293B" aria-describedby="cp-help-surface" spellcheck="false" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="palette-field" data-palette-field="sidebar">
+                      <label for="cp-hex-sidebar">Sidebar</label>
+                      <small id="cp-help-sidebar">Side menu and mobile navigation drawer</small>
+                      <div class="palette-field-inputs">
+                        <input type="color" id="cp-color-sidebar" value="#000316" aria-label="Sidebar color picker">
+                        <input type="text" class="form-input" id="cp-hex-sidebar" value="#000316" aria-describedby="cp-help-sidebar" spellcheck="false" autocomplete="off">
+                      </div>
+                      <button type="button" class="palette-sidebar-auto" data-palette-sidebar-auto>Use background shade</button>
+                    </div>
+                  </div>
+                  <div class="palette-presets" aria-label="Draft presets">
+                    <button type="button" class="filter-chip" data-palette-preset="#6366F1 #EC4899 #0F172A #1E293B">Cyber Indigo</button>
+                    <button type="button" class="filter-chip" data-palette-preset="#10B981 #06B6D4 #061A14 #0D2B22">Emerald Sea</button>
+                    <button type="button" class="filter-chip" data-palette-preset="#F59E0B #EF4444 #1A0E08 #2C170E">Solar Flare</button>
+                    <button type="button" class="filter-chip" data-palette-preset="#2563EB #8B5CF6 #F8FAFC #FFFFFF">Iceberg Light</button>
+                    <button type="button" class="filter-chip" data-palette-preset="#E11D48 #FB7185 #FFF5F7 #FFFFFF">Sakura White</button>
+                  </div>
+                  <div class="palette-editor-actions">
+                    <button type="button" class="secondary-btn" data-palette-discard>Discard changes</button>
+                    <button type="button" class="secondary-btn" data-palette-reset>Reset defaults</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+          </div>
+
+          <div id="settings-tab-security" class="settings-tab-content" style="display: none;">
+            <div class="security-settings-header" style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(var(--accent-rgb, 124, 58, 237), 0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--accent-color, #7c3aed);">
+                <i class="fa-solid fa-fingerprint"></i>
+              </div>
+              <div>
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700;">Biometric Fingerprint Security</h3>
+                <p style="margin: 3px 0 0; font-size: 12px; color: var(--text-muted);">Platform hardware sensor only. USB security keys and mobile QR passkeys are excluded.</p>
+              </div>
+            </div>
+
+            <div class="security-card" style="background: var(--bg-surface-secondary, rgba(255,255,255,0.04)); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <div>
+                  <strong style="display: block; font-size: 13.5px;">App Fingerprint Lock</strong>
+                  <span style="font-size: 11.5px; color: var(--text-muted);">Require hardware biometric verification to access Nexora Studio</span>
+                </div>
+                <label class="switch-toggle">
+                  <input type="checkbox" id="chk-app-biometric-lock" onchange="toggleBiometricLock(this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div id="biometric-support-badge" style="font-size: 11.5px; padding: 6px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: rgba(124, 58, 237, 0.1); color: var(--text-main);">
+                <i class="fa-solid fa-circle-check"></i> <span id="biometric-support-text">Checking platform biometric sensor...</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+              <button type="button" class="primary-btn" id="btn-test-biometric" onclick="triggerBiometricScan(true)" style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-fingerprint"></i> Test Fingerprint Scan
+              </button>
+              <button type="button" class="secondary-btn" onclick="closeModal('settings-modal'); switchTab('vault')" style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-vault"></i> Open Vault
+              </button>
+            </div>
+
+            <div class="security-note" style="padding: 12px; border-radius: 8px; background: rgba(var(--accent-rgb, 124, 58, 237), 0.08); border-left: 3px solid var(--accent-color, #7c3aed); font-size: 11.5px; line-height: 1.5;">
+              <strong style="color: var(--text-primary); display: block; margin-bottom: 3px;">Hardware Verification Protocol:</strong>
+              Configured strictly with <code>authenticatorAttachment: 'platform'</code> and <code>userVerification: 'required'</code> (Windows Hello Fingerprint / Touch ID). Cross-platform USB tokens and mobile phone QR code scans are prohibited.
+              <div style="margin-top: 6px; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Master Security PIN: Managed securely in Profile & Account</div>
+            </div>
+          </div>
+          <div id="settings-tab-voice" class="settings-tab-content" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Voice Commands Engine</h3>
+                <p style="margin: 4px 0 0; font-size: 12px; color: var(--text-muted);">Use the header search mic for real-time speech actions or add custom voice triggers.</p>
+              </div>
+              <button type="button" class="primary-btn" onclick="togglePersistentMic()" style="font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-microphone"></i> Test Mic
+              </button>
+            </div>
+
+            <!-- Dynamic Custom Voice Command Creator -->
+            <div class="custom-voice-builder-card" style="background: var(--bg-surface-secondary, rgba(255,255,255,0.04)); border: 1px solid var(--border-color, var(--border)); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
+              <strong style="display: block; font-size: 13px; margin-bottom: 8px;">➕ Add Dynamic Voice Command</strong>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="text" id="new-voice-phrase-input" class="form-input" placeholder="Voice trigger phrase (e.g. 'party mode', 'super volume', 'relax')" style="flex: 2; min-width: 180px;">
+                <select id="new-voice-action-select" class="form-input" style="flex: 2; min-width: 160px;">
+                  <option value="play">Play Music / Resume</option>
+                  <option value="pause">Pause Music</option>
+                  <option value="stop">Stop Playback</option>
+                  <option value="next">Next Track</option>
+                  <option value="previous">Previous Track</option>
+                  <option value="louder">Increase Volume (+15%)</option>
+                  <option value="quieter">Decrease Volume (-15%)</option>
+                  <option value="mute">Mute Audio</option>
+                  <option value="unmute">Unmute Audio</option>
+                  <option value="up">Scroll Up</option>
+                  <option value="down">Scroll Down</option>
+                  <option value="online">Open Online Music</option>
+                  <option value="downloaded">Open Downloads</option>
+                  <option value="playlists">Open Playlists</option>
+                  <option value="local">Open Local Media</option>
+                  <option value="vault">Open Private Vault</option>
+                  <option value="translator">Open Translator</option>
+                  <option value="calculator">Open Calculator</option>
+                  <option value="assistant">Open AI Assistant</option>
+                  <option value="sync">Open Cloud Sync</option>
+                </select>
+                <button type="button" class="primary-btn" onclick="addCustomDynamicVoiceCommand()" style="flex: 1; min-width: 90px; padding: 8px 14px;">Add</button>
+              </div>
+              <p id="new-voice-status" style="font-size: 11.5px; margin: 6px 0 0; color: var(--accent-color, #7c3aed);" role="status"></p>
+            </div>
+
+            <!-- List of User Added Custom Commands -->
+            <div id="custom-voice-commands-section" style="margin-bottom: 16px;">
+              <span style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 8px;">Your Custom Voice Commands:</span>
+              <div id="custom-voice-commands-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+
+            <!-- Built-in Aliases -->
+            <span style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 8px;">Default Command Trigger Aliases:</span>
+            <form id="studio-voice-settings">
+              <div id="studio-voice-command-list"></div>
+              <button type="submit" class="primary-btn" style="margin-top: 10px;">Save command aliases</button>
+              <p id="studio-voice-settings-status" role="status"></p>
+            </form>
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button type="button" class="confirm-btn" id="settings-close-button" onclick="closeModal('settings-modal')">Save &amp; close</button>
+          <div class="palette-footer" id="palette-footer">
+            <div class="palette-footer-actions" data-palette-actions>
+              <button type="button" class="secondary-btn" onclick="closeModal('settings-modal')">Close settings</button>
+              <button type="submit" form="custom-palette-form" class="secondary-btn" data-palette-action="apply">Apply theme</button>
+              <button type="submit" form="custom-palette-form" class="primary-btn" data-palette-action="exit">Save &amp; exit</button>
+            </div>
+            <div class="palette-confirmation" data-palette-confirmation hidden>
+              <p id="palette-confirmation-text" aria-live="polite"></p>
+              <div class="palette-footer-actions">
+                <button type="button" class="secondary-btn" data-palette-keep-editing>Keep editing</button>
+                <button type="button" class="primary-btn" data-palette-confirm aria-describedby="palette-confirmation-text"></button>
+              </div>
+            </div>
+            <p id="custom-palette-status" role="status"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 17. REAL-WORLD GOOGLE TRANSLATE MODAL -->
+    <div class="modal-overlay" id="translation-modal">
+      <div class="modal-card" style="max-width: 780px;">
+        <div class="modal-head" style="border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+          <div class="modal-title-row">
+            <i class="fa-solid fa-language" style="color: #4285F4; font-size: 24px;"></i>
+            <div>
+              <span class="modal-title" style="font-size: 17px; font-weight: 800;">Google Translate Studio</span>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Real-time text & live two-way speech translation across 100+ languages
+              </div>
+            </div>
+          </div>
+          <button class="close-x-btn" onclick="closeModal('translation-modal')" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="trans-container">
+            <!-- Translation Mode Switcher Tabs -->
+            <div class="trans-actions" style="margin-bottom: 12px;">
+              <button type="button" class="pill-btn active" id="trans-mode-text"
+                onclick="GOOGLE_TRANSLATE_STUDIO.setMode('text')">
+                <i class="fa-solid fa-keyboard"></i> Text Translation
+              </button>
+              <button type="button" class="pill-btn" id="trans-mode-live"
+                onclick="GOOGLE_TRANSLATE_STUDIO.setMode('live')">
+                <i class="fa-solid fa-headset"></i> Live Voice Conversation
+              </button>
+            </div>
+
+            <!-- Language Selection Bar with Swap Button -->
+            <div class="trans-lang-bar" id="trans-language-bar">
+              <div class="trans-select-wrap">
+                <span class="trans-select-label">From:</span>
+                <select id="trans-source-lang" class="trans-select"
+                  onchange="GOOGLE_TRANSLATE_STUDIO.onLanguageChange()">
+                  <option value="te" selected>Telugu (తెలుగు)</option>
+                  <option value="ml">Malayalam (മലയാളം)</option>
+                  <option value="ta">Tamil (தமிழ்)</option>
+                  <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                  <option value="hi">Hindi (हिन्दी)</option>
+                  <option value="en">English (US/UK)</option>
+                  <option value="bn">Bengali (বাংলা)</option>
+                  <option value="mr">Marathi (मराठी)</option>
+                  <option value="gu">Gujarati (ગુજરાતી)</option>
+                  <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                  <option value="ur">Urdu (اردو)</option>
+                  <option value="es">Spanish (Español)</option>
+                  <option value="fr">French (Français)</option>
+                  <option value="de">German (Deutsch)</option>
+                  <option value="it">Italian (Italiano)</option>
+                  <option value="pt">Portuguese (Português)</option>
+                  <option value="ru">Russian (Русский)</option>
+                  <option value="ar">Arabic (العربية)</option>
+                  <option value="zh">Chinese (中文)</option>
+                  <option value="ja">Japanese (日本語)</option>
+                  <option value="ko">Korean (한국어)</option>
+                  <option value="tr">Turkish (Türkçe)</option>
+                  <option value="vi">Vietnamese (Tiếng Việt)</option>
+                  <option value="th">Thai (ไทย)</option>
+                  <option value="id">Indonesian (Bahasa)</option>
+                  <option value="nl">Dutch (Nederlands)</option>
+                  <option value="pl">Polish (Polski)</option>
+                  <option value="sv">Swedish (Svenska)</option>
+                  <option value="el">Greek (Ελληνικά)</option>
+                </select>
+              </div>
+
+              <button type="button" class="trans-swap-btn" id="btn-trans-swap"
+                onclick="GOOGLE_TRANSLATE_STUDIO.swapLanguages()" title="Swap languages">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              </button>
+
+              <div class="trans-select-wrap">
+                <span class="trans-select-label">To:</span>
+                <select id="trans-target-lang" class="trans-select"
+                  onchange="GOOGLE_TRANSLATE_STUDIO.onLanguageChange()">
+                  <option value="ml" selected>Malayalam (മലയാളം)</option>
+                  <option value="te">Telugu (తెలుగు)</option>
+                  <option value="ta">Tamil (தமிழ்)</option>
+                  <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                  <option value="hi">Hindi (हिन्दी)</option>
+                  <option value="en">English (US/UK)</option>
+                  <option value="bn">Bengali (বাংলা)</option>
+                  <option value="mr">Marathi (मराठी)</option>
+                  <option value="gu">Gujarati (ગુજરાતી)</option>
+                  <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                  <option value="ur">Urdu (اردو)</option>
+                  <option value="es">Spanish (Español)</option>
+                  <option value="fr">French (Français)</option>
+                  <option value="de">German (Deutsch)</option>
+                  <option value="it">Italian (Italiano)</option>
+                  <option value="pt">Portuguese (Português)</option>
+                  <option value="ru">Russian (Русский)</option>
+                  <option value="ar">Arabic (العربية)</option>
+                  <option value="zh">Chinese (中文)</option>
+                  <option value="ja">Japanese (日本語)</option>
+                  <option value="ko">Korean (한국어)</option>
+                  <option value="tr">Turkish (Türkçe)</option>
+                  <option value="vi">Vietnamese (Tiếng Việt)</option>
+                  <option value="th">Thai (ไทย)</option>
+                  <option value="id">Indonesian (Bahasa)</option>
+                  <option value="nl">Dutch (Nederlands)</option>
+                  <option value="pl">Polish (Polski)</option>
+                  <option value="sv">Swedish (Svenska)</option>
+                  <option value="el">Greek (Ελληνικά)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tab 1: Text Translation View -->
+            <div class="trans-text-panel">
+              <div class="trans-io-grid">
+                <!-- Left Input Box -->
+                <div class="trans-box">
+                  <textarea id="trans-source-text" class="trans-textarea"
+                    placeholder="Enter or dictate words, phrases, or lyrics to translate…"
+                    oninput="GOOGLE_TRANSLATE_STUDIO.onInput(event)" oncompositionend="GOOGLE_TRANSLATE_STUDIO.onInput(event)"></textarea>
+                  <div class="trans-bottom-bar">
+                    <div class="trans-tools-row">
+                      <button type="button" class="icon-action-btn" id="btn-trans-source-tts"
+                        onclick="GOOGLE_TRANSLATE_STUDIO.speakSource()" title="Listen to input text aloud">
+                        <i class="fa-solid fa-volume-high"></i>
+                      </button>
+                      <button type="button" class="icon-action-btn" id="btn-trans-voice"
+                        onclick="GOOGLE_TRANSLATE_STUDIO.startSpeaking('source')" title="Dictate text (Speech-to-Text)">
+                        <i class="fa-solid fa-microphone"></i>
+                      </button>
+                      <button type="button" class="icon-action-btn" onclick="GOOGLE_TRANSLATE_STUDIO.clearText()"
+                        title="Clear text">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                    <span class="trans-char-count" id="trans-char-count">0 chars</span>
+                  </div>
+                </div>
+
+                <!-- Right Output Box -->
+                <div class="trans-box">
+                  <div id="trans-output-text" class="trans-output-text" aria-live="polite">
+                    Translation will appear here...
+                  </div>
+                  <div class="trans-bottom-bar">
+                    <div class="trans-tools-row">
+                      <button type="button" class="icon-action-btn" id="btn-trans-tts"
+                        onclick="GOOGLE_TRANSLATE_STUDIO.speakTarget()" title="Listen to translation aloud">
+                        <i class="fa-solid fa-volume-high"></i>
+                      </button>
+                      <button type="button" class="icon-action-btn" onclick="GOOGLE_TRANSLATE_STUDIO.copyOutput()"
+                        title="Copy translation">
+                        <i class="fa-solid fa-copy"></i>
+                      </button>
+                      <button type="button" class="secondary-btn" style="padding: 4px 10px; font-size: 11px;"
+                        onclick="GOOGLE_TRANSLATE_STUDIO.searchTranslatedMusic()"
+                        title="Search music using this translated query">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search Songs
+                      </button>
+                    </div>
+                    <span class="trans-char-count" id="trans-status-tag"
+                      style="color: var(--primary); font-weight: 700;" role="status"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px; display: flex; justify-content: flex-end;">
+                <button type="button" class="primary-btn" onclick="GOOGLE_TRANSLATE_STUDIO.translateText()">
+                  <i class="fa-solid fa-language"></i> Translate Now
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab 2: Two-Way Live Voice Conversation View -->
+            <div class="trans-live-panel" id="trans-live-panel" style="display: none;">
+              <div class="trans-mic-status-banner">
+                <span class="mic-pulse-dot" style="display: inline-block;"></span>
+                <span id="trans-live-status-text" role="status">Click a microphone below to speak in your language</span>
+              </div>
+
+              <!-- Two-Way Live Speech Buttons -->
+              <div class="trans-live-buttons-grid">
+                <button type="button" class="trans-talk-btn source-talk" id="btn-speak-source"
+                  onclick="GOOGLE_TRANSLATE_STUDIO.startSpeaking('source')">
+                  <i class="fa-solid fa-microphone"></i>
+                  <div class="trans-talk-info">
+                    <span class="talk-btn-title" id="label-speak-source">🎙️ Speak Telugu</span>
+                    <span class="talk-btn-sub" id="sub-speak-source">Translates to Malayalam & speaks out</span>
+                  </div>
+                </button>
+
+                <button type="button" class="trans-talk-btn target-talk" id="btn-speak-target"
+                  onclick="GOOGLE_TRANSLATE_STUDIO.startSpeaking('target')">
+                  <i class="fa-solid fa-microphone"></i>
+                  <div class="trans-talk-info">
+                    <span class="talk-btn-title" id="label-speak-target">🎙️ Speak Malayalam</span>
+                    <span class="talk-btn-sub" id="sub-speak-target">Translates to Telugu & speaks out</span>
+                  </div>
+                </button>
+              </div>
+
+              <div class="trans-live-options">
+                <label class="trans-option-check">
+                  <input type="checkbox" id="trans-auto-speak-toggle" checked />
+                  <span><i class="fa-solid fa-volume-high" style="color: #10B981;"></i> Auto-speak translated audio
+                    aloud (TTS)</span>
+                </label>
+                <button type="button" class="secondary-btn" style="padding: 4px 10px; font-size: 11px;"
+                  onclick="GOOGLE_TRANSLATE_STUDIO.clearHistory()">
+                  <i class="fa-solid fa-trash-can"></i> Clear History
+                </button>
+              </div>
+
+              <!-- Chat History Log -->
+              <div class="trans-chat-history" id="trans-chat-history">
+                <div class="trans-chat-empty" id="trans-chat-empty">
+                  <i class="fa-solid fa-comments"
+                    style="font-size: 28px; color: var(--text-muted); margin-bottom: 8px;"></i>
+                  <p>Speak in either language. The device will transcribe, translate, and speak out the audio to the
+                    other person!</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-actions-footer">
+          <button type="button" class="cancel-btn" onclick="closeModal('translation-modal')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18. STANDALONE SMART CALCULATOR MODAL -->
+    <div class="modal-overlay" id="calculator-modal">
+      <div class="modal-card"
+        style="max-width: 380px; padding: 0; background: transparent; border: none; box-shadow: none;">
+        <div class="calc-card-wrap">
+          <div class="modal-head" style="padding: 14px 18px; border-bottom: 1px solid var(--border);">
+            <div class="modal-title-row">
+              <i class="fa-solid fa-calculator" style="color: #10B981; font-size: 18px;"></i>
+              <span class="modal-title" style="font-size: 15px;">Smart Calculator</span>
+            </div>
+            <button class="close-x-btn" onclick="closeModal('calculator-modal')" title="Close">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Calculator Screen -->
+          <div class="calc-screen">
+            <div class="calc-expr" id="calc-expr"></div>
+            <div class="calc-val" id="calc-val">0</div>
+          </div>
+
+          <!-- Calculator Keypad -->
+          <div class="calc-grid">
+            <button class="calc-btn fn-btn" onclick="STUDIO_CALCULATOR.clear()" title="Clear (C)">C</button>
+            <button class="calc-btn fn-btn" onclick="STUDIO_CALCULATOR.backspace()" title="Delete (⌫)">⌫</button>
+            <button class="calc-btn op-btn" onclick="STUDIO_CALCULATOR.input('%')" title="Percent (%)">%</button>
+            <button class="calc-btn op-btn" onclick="STUDIO_CALCULATOR.input('/')" title="Divide (÷)">÷</button>
+
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('7')">7</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('8')">8</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('9')">9</button>
+            <button class="calc-btn op-btn" onclick="STUDIO_CALCULATOR.input('*')" title="Multiply (×)">×</button>
+
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('4')">4</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('5')">5</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('6')">6</button>
+            <button class="calc-btn op-btn" onclick="STUDIO_CALCULATOR.input('-')" title="Subtract (−)">−</button>
+
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('1')">1</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('2')">2</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('3')">3</button>
+            <button class="calc-btn op-btn" onclick="STUDIO_CALCULATOR.input('+')" title="Add (+)">+</button>
+
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.toggleSign()" title="Negate (±)">±</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('0')">0</button>
+            <button class="calc-btn" onclick="STUDIO_CALCULATOR.input('.')">.</button>
+            <button class="calc-btn eq-btn" onclick="STUDIO_CALCULATOR.calculate()" title="Equals (=)">=</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19. FLOATING VOICE COMMAND FEEDBACK TOAST (Sleek Compact Pill) -->
+    <div class="voice-toast-banner" id="voice-toast-banner" role="status" aria-live="polite">
+      <span class="mic-dot-indicator"></span>
+      <span id="voice-toast-text">Listening...</span>
+    </div>
+
+
+    <div class="modal-overlay" id="supabase-account-modal">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cloud-account-title">
+        <div class="modal-head">
+          <h2 class="modal-title" id="cloud-account-title">Cloud account</h2>
+          <button type="button" class="close-x-btn" onclick="closeModal('supabase-account-modal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <p id="supabase-session-title"></p>
+          <p id="supabase-session-status" role="status"></p>
+          <form id="supabase-auth-form" onsubmit="event.preventDefault(); signInToCloud()">
+            <label for="supabase-email">Email</label>
+            <input class="form-input" type="email" id="supabase-email" autocomplete="email" required>
+            <label for="supabase-password">Password</label>
+            <input class="form-input" type="password" id="supabase-password" autocomplete="current-password" required>
+            <button class="primary-btn" type="submit">Sign in</button>
+            <button class="secondary-btn" type="button" onclick="signInToCloud(true)">Create account</button>
+          </form>
+          <div id="supabase-signed-in-actions" hidden>
+            <button class="primary-btn" type="button" onclick="refreshCloudLibrary()">Refresh cloud library</button>
+            <button class="secondary-btn" type="button" onclick="importBrowserPlaylists()">Import playlists from this browser</button>
+            <button class="secondary-btn" type="button" onclick="syncBrowserMedia(this)">Back up browser files</button>
+            <button class="secondary-btn" type="button" onclick="signOutOfCloud()">Sign out</button>
+          </div>
+          <button type="button" class="secondary-btn" onclick="closeModal('supabase-account-modal'); openModal('cross-sync-modal')">Transfer with a sync token</button>
+        </div>
+      </div>
+    </div>
+
+
+  <div class="modal-overlay" id="delete-confirm-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="delete-confirm-title">Confirm removal</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('delete-confirm-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <strong id="delete-confirm-target-name"></strong>
+        <p id="delete-confirm-desc"></p>
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('delete-confirm-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="executeConfirmedDelete()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="rename-folder-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="rename-folder-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="rename-folder-modal-title">Rename folder</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('rename-folder-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="rename-folder-input">Folder name</label>
+        <input class="form-input" id="rename-folder-input" maxlength="120">
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('rename-folder-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="executeRenameFolder()">Save folder</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="move-file-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="move-file-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="move-file-modal-title">Move media</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('move-file-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" id="move-file-item-name" for="move-destination-folder-select">Destination folder</label>
+        <select id="move-destination-folder-select" class="form-input"></select>
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('move-file-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="executeMoveFile()">Move</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="edit-playlist-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-playlist-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="edit-playlist-modal-title">Edit playlist</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('edit-playlist-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="edit-playlist-name">Name</label>
+        <input class="form-input" id="edit-playlist-name" maxlength="120">
+        <label class="form-label" for="edit-playlist-description">Description</label>
+        <textarea class="form-input" id="edit-playlist-description" maxlength="500"></textarea>
+        <label class="form-label" for="edit-playlist-cover">Cover image</label>
+        <input type="file" class="form-input" id="edit-playlist-cover" accept="image/png,image/jpeg,image/webp">
+        <label><input type="checkbox" id="edit-playlist-reset-cover"> Use default cover</label>
+        <p id="edit-playlist-status" role="status"></p>
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('edit-playlist-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="savePlaylistChanges(this)">Save playlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="edit-download-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-download-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="edit-download-modal-title">Edit downloaded audio</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('edit-download-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="edit-download-name">Title</label>
+        <input class="form-input" id="edit-download-name" maxlength="160">
+        <label class="form-label" for="edit-download-artist">Artist</label>
+        <input class="form-input" id="edit-download-artist" maxlength="160">
+        <label class="form-label" for="edit-download-cover">Cover image</label>
+        <input type="file" class="form-input" id="edit-download-cover" accept="image/png,image/jpeg,image/webp">
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('edit-download-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="saveDownloadedMetadata(this)">Save audio</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="download-source-modal">
+    <div class="modal-card library-dialog" role="dialog" aria-modal="true" aria-labelledby="download-source-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="download-source-modal-title">Download audio</h2>
+        <button type="button" class="close-x-btn" onclick="closeModal('download-source-modal')" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <strong id="download-source-track"></strong>
+        <p>Enter a direct audio URL you have permission to save. YouTube playback links are streaming sources.</p>
+        <label class="form-label" for="download-source-url">Direct audio URL</label>
+        <input class="form-input" type="url" id="download-source-url" placeholder="https://example.com/song.mp3">
+        <p id="download-source-status" role="status"></p>
+      </div>
+      <div class="modal-actions-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('download-source-modal')">Cancel</button>
+        <button type="button" class="primary-btn" onclick="saveDownloadSource(this)">Download to library</button>
+      </div>
+    </div>
+  </div>
+    <!-- App Biometric Platform Lock Screen Overlay -->
+  <div id="app-biometric-lock-overlay" class="app-biometric-lock-overlay" style="display: none;">
+    <div class="studio-login-card">
+      <div class="login-brand-header">
+        <div class="login-brand-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2 class="login-studio-title" id="login-brand-title">Nexora Studio</h2>
+        <p class="login-studio-sub">Biometric Security & Private Studio Access</p>
+      </div>
+
+      <!-- Biometric Hardware Touch Section -->
+      <div class="biometric-touch-section">
+        <button type="button" id="lock-screen-fingerprint-btn" class="biometric-scanner-ring" onclick="triggerBiometricScan(false)" title="Touch device fingerprint sensor to unlock">
+          <i class="fa-solid fa-fingerprint"></i>
+        </button>
+        <span class="biometric-instruction">Touch your device fingerprint sensor to unlock</span>
+      </div>
+
+      <div id="biometric-lock-status" style="min-height: 20px; font-size: 12.5px; color: var(--primary, #4F46E5); margin-bottom: 8px; font-weight: 600;"></div>
+
+      <div class="login-divider-row">
+        <span>OR ENTER MASTER PASSWORD</span>
+      </div>
+
+      <!-- Dynamic First-Time Setup OTP Badge (Hidden once user establishes custom password) -->
+      <div id="first-time-otp-banner" style="display: none; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; text-align: center;">
+        <div style="font-size: 11px; color: var(--text-muted, #94a3b8); margin-bottom: 3px;">First-Time Setup Passcode:</div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span style="font-size: 12px; color: #10B981; font-weight: 700;">🔑 Default OTP:</span>
+          <span style="font-family: monospace; font-size: 15px; font-weight: 800; color: #10B981; background: rgba(16, 185, 129, 0.2); padding: 2px 10px; border-radius: 6px; letter-spacing: 2px;">2003</span>
+        </div>
+        <div style="font-size: 10.5px; color: var(--text-muted, #94a3b8); margin-top: 4px;">Use this OTP to login, then set your custom password in Settings > Profile.</div>
+      </div>
+
+      <div class="login-input-group">
+        <i class="fa-solid fa-lock login-input-icon"></i>
+        <input type="password" id="biometric-master-pin-input" class="login-password-field" placeholder="Enter master password..." onkeydown="if(event.key==='Enter') unlockWithMasterPin()">
+        <button type="button" class="login-eye-btn" onclick="toggleBiometricPasswordVisibility()" title="Show/Hide Password">
+          <i class="fa-solid fa-eye" id="pin-eye-icon"></i>
+        </button>
+      </div>
+
+      <button type="button" class="login-submit-btn" onclick="unlockWithMasterPin()">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Unlock Studio
+      </button>
+
+      <div class="login-security-tag">
+        <i class="fa-solid fa-shield-check" style="color: #10B981;"></i> AES-GCM Encrypted & Hardware Verified
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="/vendor/supabase.js"></script>
+    <script src="app.js?v=library-1"></script>
+    <script src="library-controls.js?v=1"></script>
+    <script src="vault-security.js?v=1"></script>
+    <script src="playlists.js?v=library-1"></script>
+    <script src="cloud-sync.js?v=library-1"></script>
+    <script src="palette-preview.js?v=sidebar-1"></script>
+    <script src="translation-provider.js"></script>
+    <script src="translator.js"></script>
+    <script src="music-command-parser.js"></script>
+    <script src="voice-settings.js?v=1"></script>
+    <script src="music-voice.js?v=1"></script>
+</body>
+
+</html>

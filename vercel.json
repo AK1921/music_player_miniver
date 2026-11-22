@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/youtube-search", "destination": "/api/youtube-search.js" },
+    { "source": "/api/translate", "destination": "/api/translate.js" },
+    { "source": "/", "destination": "/web/index.html" },
+    { "source": "/(.*)", "destination": "/web/$1" }
+  ]
+}

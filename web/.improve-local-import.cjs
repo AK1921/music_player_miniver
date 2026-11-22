@@ -1,0 +1,50 @@
+const fs=require('node:fs');let a=fs.readFileSync('web/app.js','utf8').replace(/\r\n/g,'\n');
+const start=a.indexOf('async function executeBulkUpload()'),end=a.indexOf('function readFileAsDataUrl(',start);
+if(start<0||end<0)throw Error('missing local upload function');
+a=a.slice(0,start)+[
+'async function executeBulkUpload() {',
+"  const fileInput = document.getElementById('bulk-file-input');",
+"  const coverInput = document.getElementById('bulk-cover-input');",
+'  const files = [...fileInput.files];',
+"  if (!files.length) { showVoiceToast('Select at least one file to add.'); return; }",
+"  if (!dbInstance) { showVoiceToast('Browser storage is unavailable.'); return; }",
+'  if (fileInput.disabled) return;',
+'  const folderId = STATE.activeSubFolder || STATE.activeLocalFolder;',
+'  fileInput.disabled = true;',
+'  try {',
+'    const cover = await readLibraryCover(coverInput.files[0]);',
+'    const pending = [];',
+'    for (const file of files) {',
+"      let category = 'document';",
+"      if (file.type.startsWith('audio/') || /\\.(mp3|wav|m4a|aac|flac|ogg|opus)$/i.test(file.name)) category = 'audio';",
+"      else if (file.type.startsWith('video/') || /\\.(mp4|mov|webm|mkv)$/i.test(file.name)) category = 'video';",
+"      else if (file.type.startsWith('image/') || /\\.(jpg|jpeg|png|webp|gif|svg)$/i.test(file.name)) category = 'image';",
+'      const fileData = await readFileAsDataUrl(file);',
+"      if (!fileData || !file.size) throw new Error('Could not read ' + file.name + '.');",
+'      const folder = STATE.customFolders.find(item => item.id === folderId &&',
+"        (item.category === category || item.category === 'all'));",
+"      pending.push({ id: 'local_' + generateUUID(), name: file.name, artist: 'Local Media', category,",
+"        size: file.size, fileData, coverUrl: cover || (category === 'image' ? fileData : offlineArtwork),",
+'        folderId: folder?.id || null, uploadDate: new Date().toLocaleDateString() });',
+'    }',
+'    await new Promise((resolve, reject) => {',
+"      const tx = dbInstance.transaction('local_files', 'readwrite');",
+"      const store = tx.objectStore('local_files');",
+'      pending.forEach(item => store.add(item));',
+'      tx.oncomplete = resolve;',
+"      tx.onabort = () => reject(new Error('Could not save these files. Check browser storage.'));",
+'    });',
+'    await loadLocalFiles();',
+"    closeModal('bulk-upload-modal');",
+"    showVoiceToast('Added ' + pending.length + ' file(s) to your library.');",
+'  } catch (error) {',
+'    showVoiceToast(error.message);',
+'  } finally {',
+'    fileInput.disabled = false;',
+'  }',
+'}','','',
+].join('\n')+a.slice(end);
+a=a.replace(/alert\((`Folder renamed[^\\n]+|`Moved [^\\n]+)\);/g,'showVoiceToast($1);')
+  .replace("alert('Synchronization Successful! Android playlists and favorites have merged into Web Studio.');","showVoiceToast('Sync token imported.');");
+fs.writeFileSync('web/app.js',a);
+
