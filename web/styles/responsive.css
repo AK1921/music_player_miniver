@@ -271,17 +271,50 @@ html, body {
     flex-shrink: 0 !important;
   }
 
-  /* 3. Action Buttons (Theme Palette + Cloud Sync) */
+  /* 3. Action Buttons (Color Palette Dropdown + Cloud Sync) */
   .top-actions {
     order: 3 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 5px !important;
     margin: 0 !important;
     flex-shrink: 0 !important;
   }
 
-  .top-actions .pill-btn {
+  /* Color Palette Dropdown Button with Chevron */
+  #btn-theme-toggle {
+    height: 34px !important;
+    min-height: 34px !important;
+    width: auto !important;
+    min-width: 44px !important;
+    padding: 0 8px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #btn-theme-toggle #current-theme-name {
+    display: none !important;
+  }
+
+  #btn-theme-toggle .fa-palette {
+    font-size: 13px !important;
+    color: var(--primary) !important;
+  }
+
+  #btn-theme-toggle .fa-chevron-down {
+    display: inline-block !important;
+    font-size: 9px !important;
+    color: var(--text-muted) !important;
+    opacity: 0.85 !important;
+  }
+
+  /* Cloud Sync Button */
+  .top-actions > button[onclick*="openSupabaseAccountModal"],
+  .top-actions > button[aria-label="Cloud account"] {
     width: 34px !important;
     height: 34px !important;
     min-width: 34px !important;
@@ -291,16 +324,11 @@ html, body {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    flex-shrink: 0 !important;
   }
 
-  .top-actions .pill-btn span,
-  .top-actions .pill-btn .fa-chevron-down {
+  #top-supabase-sync-label {
     display: none !important;
-  }
-
-  .top-actions .pill-btn i {
-    font-size: 14px !important;
-    margin: 0 !important;
   }
 
   /* Theme Dropdown Positioned Safely on Mobile */

@@ -2928,8 +2928,8 @@ function updateOnlineSearchStatus(status, query = '') {
   if (searching && feed && recommendations?.nextElementSibling === feed) recommendations.before(feed);
   if (!status && recommendations && feed?.nextElementSibling === recommendations) feed.before(recommendations);
   panel.hidden = !searching && !unavailable;
-  document.getElementById('online-search-message').textContent = searching ? 'Searching YouTube…' :
-    unavailable ? 'Live YouTube search is temporarily unavailable.' : '';
+  document.getElementById('online-search-message').textContent = searching ? 'Searching AK Studio…' :
+    unavailable ? 'Live AK Studio search is temporarily unavailable.' : '';
   const link = document.getElementById('online-search-link');
   link.hidden = !unavailable;
   if (unavailable) link.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
@@ -7306,7 +7306,7 @@ const GOOGLE_TRANSLATE_STUDIO = {
     const searchInput = document.getElementById('global-search-input');
     if (searchInput) searchInput.value = text;
     handleSearchSubmit();
-    showVoiceToast(`🔍 Searching YouTube for: "${text}"`);
+    showVoiceToast(`🔍 Searching AK Studio for: "${text}"`);
   },
 
   copyOutput() {
