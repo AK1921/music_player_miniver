@@ -167,7 +167,7 @@ html, body {
     height: 52px !important;
     min-height: 52px !important;
     max-height: 52px !important;
-    padding: 6px 10px !important;
+    padding: 6px 8px !important;
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -181,6 +181,9 @@ html, body {
     border-bottom: 1px solid var(--border) !important;
     box-shadow: var(--shadow-xs) !important;
     box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
   }
 
   /* 1. Hamburger Toggle Button */
@@ -199,11 +202,12 @@ html, body {
     flex-shrink: 0 !important;
   }
 
-  /* 2. Fluid Search Box (Search Input + Mic + Action Icon) */
+  /* 2. Fluid Search Box (Search Input + Mic) */
+  .top-bar .search-box-container,
   .search-box-container {
     order: 2 !important;
     width: auto !important;
-    flex: 1 1 auto !important;
+    flex: 1 1 0% !important;
     min-width: 0 !important;
     max-width: none !important;
     margin: 0 !important;
@@ -217,39 +221,22 @@ html, body {
     display: flex !important;
     align-items: center !important;
     width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
   }
 
   .search-input {
-    font-size: 12px !important;
+    font-size: 11.5px !important;
     margin: 0 !important;
     padding: 0 !important;
     min-width: 0 !important;
     width: 100% !important;
+    flex: 1 1 auto !important;
     line-height: normal !important;
   }
 
   .search-btn {
-    padding: 0 !important;
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    min-height: 28px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-  }
-
-  .search-btn span {
     display: none !important;
-  }
-
-  .search-btn::before {
-    content: "\f002";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    font-size: 11px;
   }
 
   .search-mic-icon-btn {
@@ -282,6 +269,7 @@ html, body {
   }
 
   /* Color Palette Dropdown Button with Chevron */
+  .top-bar #btn-theme-toggle,
   #btn-theme-toggle {
     height: 34px !important;
     min-height: 34px !important;
@@ -313,8 +301,9 @@ html, body {
   }
 
   /* Cloud Sync Button */
-  .top-actions > button[onclick*="openSupabaseAccountModal"],
-  .top-actions > button[aria-label="Cloud account"] {
+  .top-bar .top-actions > button[onclick*="openSupabaseAccountModal"],
+  .top-bar .top-actions > button[aria-label="Cloud account"],
+  .top-actions > button:not(#btn-theme-toggle) {
     width: 34px !important;
     height: 34px !important;
     min-width: 34px !important;
