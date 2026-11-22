@@ -1,38 +1,68 @@
 /* ==============================================================================
-   RESPONSIVE DESIGN BREAKPOINTS (DESKTOP, LAPTOP, TABLET & MOBILE)
-   Viewports: 1920x1080, 1600x900, 1366x768, 1024x768, 768x1024, 390x844
+   AK MUSIC STUDIO – ULTRA-RESPONSIVE CROSS-DEVICE DESIGN SYSTEM
+   Supports: Large Desktop (1440px+), Laptop (1024-1439px), Tablet (769-1023px),
+             Mobile Landscape/Phablet (481-768px), Compact Smartphone (320-480px)
    ============================================================================== */
 
-/* Large Desktop / Laptops (1200px - 1440px) */
-@media (max-width: 1400px) {
-  .top-actions {
-    gap: 6px;
-  }
-  .top-actions .pill-btn {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  .search-box-container {
-    max-width: 420px;
-  }
+/* Base Global Reset for Mobile Viewports */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@media (max-width: 1200px) {
-  .health-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==============================================================================
+   1. LAPTOPS & MID-SIZED SCREENS (max-width: 1280px)
+   ============================================================================== */
+@media (max-width: 1280px) {
   .search-box-container {
-    max-width: 340px;
-  }
-  #api-status-tag {
-    display: none;
+    max-width: 380px;
   }
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .player-track-info {
+    max-width: 30%;
+    min-width: 180px;
   }
 }
 
-/* Tablets Landscape & Portrait (<= 992px) */
+/* ==============================================================================
+   2. TABLETS & SMALL LAPTOPS (max-width: 1024px)
+   ============================================================================== */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+
+  .search-box-container {
+    max-width: 300px;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+  }
+
+  .volume-wrapper {
+    width: 90px;
+  }
+
+  .volume-slider {
+    width: 60px;
+  }
+}
+
+/* ==============================================================================
+   3. TABLETS PORTRAIT & OFF-CANVAS SIDEBAR BREAKPOINT (max-width: 992px)
+   ============================================================================== */
 @media (max-width: 992px) {
   /* Off-canvas mobile navigation drawer */
   .sidebar {
@@ -40,25 +70,40 @@
     top: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
-    height: 100vh !important;
-    width: min(290px, 85vw) !important;
-    z-index: 1050 !important;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: none;
+    height: 100% !important;
+    height: 100dvh !important;
+    width: min(280px, 80vw) !important;
+    max-width: 320px !important;
+    z-index: 100001 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .sidebar.mobile-open {
     transform: translateX(0) !important;
-    box-shadow: 0 0 50px rgba(15, 23, 42, 0.35) !important;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.45) !important;
   }
 
-  .sidebar-mobile-close-btn {
-    display: flex !important;
+  .sidebar-backdrop {
+    display: none;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.55) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 100000 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
   }
 
-  #btn-collapse-sidebar {
-    display: none !important;
+  .sidebar-backdrop.active {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 
   .main-stage,
@@ -66,12 +111,13 @@
     width: 100vw !important;
     min-width: 0 !important;
     margin-left: 0 !important;
+    max-width: 100vw !important;
   }
 
-  /* Footer media player spans full width on mobile/tablet */
   .bottom-player-bar {
     left: 0 !important;
     right: 0 !important;
+    width: 100% !important;
   }
 
   .sync-grid {
@@ -81,127 +127,713 @@
   .health-cards-grid {
     grid-template-columns: 1fr;
   }
-
-  .local-videos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
 }
 
-/* Mobile & Small Tablet Devices (<= 768px) */
+/* ==============================================================================
+   4. SMARTPHONES & MOBILE BROWSERS (max-width: 768px)
+   ============================================================================== */
 @media (max-width: 768px) {
+  /* App Root and Main Container */
+  .app-layout {
+    height: 100% !important;
+    height: 100dvh !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  .main-stage {
+    height: 100% !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Viewport Content with Bottom Safe Area */
+  .viewport-content {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 12px 12px calc(80px + env(safe-area-inset-bottom, 0px)) 12px !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Compact Responsive Top Bar */
   .top-bar {
     height: auto !important;
-    min-height: 60px;
-    padding: 10px 14px;
-    flex-wrap: wrap;
-    gap: 10px;
+    min-height: auto !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: var(--bg-surface) !important;
+    border-bottom: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-xs) !important;
   }
 
-  .search-box-container {
-    order: 3;
-    width: 100%;
-    max-width: 100%;
+  /* Left Toggle Button */
+  .top-bar .collapse-toggle-btn {
+    order: 1 !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
   }
 
+  /* Top Right Action Pills */
   .top-actions {
-    margin-left: auto;
-    gap: 6px;
-  }
-
-  .top-actions .pill-btn span:not(.theme-color-dot) {
-    display: none;
+    order: 2 !important;
+    margin-left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
   }
 
   .top-actions .pill-btn {
-    padding: 7px 10px;
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    min-height: 34px !important;
   }
 
-  .viewport-content {
-    padding: 16px 14px calc(var(--player-height) + 24px) 14px;
+  .top-actions .pill-btn span:not(.theme-color-dot) {
+    display: none !important;
   }
 
-  .bottom-player-bar {
-    padding: 8px 14px;
-    height: auto;
-    min-height: 76px;
-    flex-wrap: wrap;
-    gap: 8px;
+  .top-actions .pill-btn .fa-chevron-down {
+    display: none !important;
   }
 
-  .player-track-info {
-    width: auto;
-    max-width: 60%;
-    flex: 1;
-  }
-
-  .player-center-controls {
-    order: 3;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .player-right-tools {
-    gap: 8px;
-  }
-
-  .folders-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .playback-choice-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-overlay {
-    padding: 14px !important;
-  }
-
-  .modal-card {
-    max-height: 92vh;
-    width: 100%;
-  }
-
-  .theater-box {
-    padding: 14px !important;
-    max-height: 94vh;
-  }
-
-  .biometric-lock-card {
-    padding: 26px 18px !important;
+  /* Full-Width Search Input Row */
+  .search-box-container {
+    order: 3 !important;
+    width: 100% !important;
     max-width: 100% !important;
-  }
-}
-
-/* Compact Smartphones (<= 480px) */
-@media (max-width: 480px) {
-  .folders-grid {
-    grid-template-columns: 1fr;
+    margin: 0 !important;
+    flex: 1 0 100% !important;
   }
 
-  .local-videos-grid {
-    grid-template-columns: 1fr;
+  .search-input-wrapper {
+    height: 40px !important;
+    padding: 3px 6px 3px 12px !important;
+    border-radius: 20px !important;
+    gap: 6px !important;
   }
 
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .search-input {
+    font-size: 13px !important;
+    margin-left: 2px !important;
   }
 
-  .filter-tabs-row {
-    gap: 6px;
+  .search-mic-icon-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 12px !important;
+  }
+
+  .search-btn {
+    padding: 5px 12px !important;
+    font-size: 11.5px !important;
+    border-radius: 16px !important;
+    min-height: 30px !important;
+  }
+
+  /* Theme Dropdown Positioned Safely on Mobile */
+  .theme-menu {
+    position: absolute !important;
+    top: calc(100% + 6px) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: min(260px, 88vw) !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35) !important;
+    z-index: 100002 !important;
+  }
+
+  /* Section Header on Mobile */
+  .section-head {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .section-head > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .hero-title {
+    font-size: 20px !important;
+    margin-bottom: 2px !important;
+    line-height: 1.25 !important;
+  }
+
+  .hero-sub {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Category Filter Chips Horizontal Swiper */
+  .filter-tabs-row,
+  #yt-chips-container {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    padding: 2px 2px 8px 2px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .filter-tabs-row::-webkit-scrollbar,
+  #yt-chips-container::-webkit-scrollbar {
+    display: none !important;
   }
 
   .filter-chip {
-    padding: 5px 12px;
-    font-size: 12px;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 5px 12px !important;
+    font-size: 11.5px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Local Folders Horizontal Chip Row */
+  .folders-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 8px !important;
+    padding: 4px 2px 10px 2px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .folders-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .folder-card {
+    flex: 0 0 auto !important;
+    min-width: 120px !important;
+    max-width: 160px !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .folder-icon {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+  }
+
+  .folder-card h4 {
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .folder-card p {
+    font-size: 10px !important;
+  }
+
+  /* Downloaded Header Stats */
+  .downloaded-header-stats {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .stat-card {
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    gap: 10px !important;
+  }
+
+  .stat-icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+  }
+
+  .stat-info h3 {
+    font-size: 16px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .stat-info p {
+    font-size: 9px !important;
+  }
+
+  /* Local Audio Rows */
+  .local-audio-row {
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .local-audio-thumb {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Sleek Fixed Mobile Mini Player (Spotify Style) */
+  .bottom-player-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+    padding: 0 12px !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    background: var(--bg-player) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid var(--border) !important;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.28) !important;
+    z-index: 99999 !important;
+  }
+
+  /* Top 3px Live Progress Line */
+  .bottom-player-bar .progress-bar-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 3px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .bottom-player-bar .time-label {
+    display: none !important;
+  }
+
+  .bottom-player-bar .progress-track {
+    height: 3px !important;
+    border-radius: 0 !important;
+    background: rgba(140, 140, 140, 0.2) !important;
+  }
+
+  .bottom-player-bar .progress-fill {
+    height: 100% !important;
+    border-radius: 0 !important;
+  }
+
+  /* Track Details (Left) */
+  .player-track-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 130px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .player-artwork-box {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
   }
 
   .player-track-meta {
-    max-width: 150px;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
   }
 
   .player-track-title {
-    font-size: 13px;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.25 !important;
+    color: var(--text-main) !important;
+  }
+
+  .player-track-artist {
+    font-size: 11px !important;
+    color: var(--text-muted) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Playback Controls (Right) */
+  .player-center-controls {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    order: 2 !important;
+  }
+
+  .control-buttons-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  /* Hide Desktop Redundant Tools on Mobile Mini-Player */
+  #btn-shuffle,
+  #btn-repeat,
+  #btn-stop-playback,
+  .player-right-tools {
+    display: none !important;
+  }
+
+  .control-buttons-row .ctrl-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 12px !important;
+  }
+
+  .play-pause-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 14px !important;
+    border-radius: 50% !important;
+  }
+
+  .bottom-player-bar .btn-close-player {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    font-size: 12px !important;
+    margin-left: 2px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Modals Overlay & Card on Mobile */
+  .modal-overlay {
+    padding: 10px !important;
+    align-items: flex-end !important;
+    z-index: 100000 !important;
+  }
+
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    border-radius: 18px 18px 12px 12px !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .modal-header {
+    padding: 14px 16px !important;
+  }
+
+  .modal-body {
+    padding: 14px 16px !important;
+  }
+
+  .modal-footer {
+    padding: 10px 16px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .settings-tabs-header {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .settings-tab-btn {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+    min-height: 34px !important;
+  }
+
+  /* Full Theater Modal on Mobile */
+  .theater-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 14px !important;
+    max-height: 90vh !important;
+  }
+
+  .theater-viewport {
+    width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    max-height: 48vh !important;
+  }
+
+  /* PiP Mini Floating Box on Mobile */
+  .theater-container.pip-mode {
+    position: fixed !important;
+    right: 10px !important;
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+    width: min(220px, 58vw) !important;
+    z-index: 100000 !important;
+  }
+}
+
+/* ==============================================================================
+   5. COMPACT SMARTPHONES (max-width: 640px)
+   ============================================================================== */
+@media (max-width: 640px) {
+  /* 2-Column Responsive Card Grid for YouTube & Music Feed */
+  #online-cards-container,
+  .cards-grid,
+  #playlists-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .media-card {
+    padding: 6px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+  }
+
+  .card-thumb-wrapper {
+    aspect-ratio: 16 / 9 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .card-type-tag {
+    font-size: 9px !important;
+    padding: 2px 6px !important;
+    top: 5px !important;
+    left: 5px !important;
+  }
+
+  .card-duration-tag {
+    font-size: 9px !important;
+    padding: 2px 5px !important;
+    bottom: 5px !important;
+    right: 5px !important;
+  }
+
+  .card-info {
+    padding: 6px 2px 2px 2px !important;
+    min-width: 0 !important;
+  }
+
+  .card-title {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    max-height: 2.6em !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    margin-bottom: 2px !important;
+    font-weight: 700 !important;
+  }
+
+  .card-artist {
+    font-size: 10.5px !important;
+    color: var(--text-muted) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .card-stats {
+    font-size: 9.5px !important;
+    color: var(--text-muted) !important;
+    margin-top: 2px !important;
+  }
+
+  .card-actions-bar {
+    padding-top: 6px !important;
+    margin-top: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+  }
+
+  .download-pill-btn {
+    padding: 4px 6px !important;
+    font-size: 10.5px !important;
+    min-height: 28px !important;
+    border-radius: 6px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  .download-pill-btn span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .icon-action-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .local-videos-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Biometric Lock Card */
+  .biometric-lock-card {
+    padding: 22px 16px !important;
+    max-width: 100% !important;
+    border-radius: 18px !important;
+  }
+
+  .pin-dots-container {
+    gap: 10px !important;
+    margin: 16px 0 !important;
+  }
+
+  .pin-numpad {
+    gap: 10px !important;
+    max-width: 240px !important;
+  }
+
+  .pin-key {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 18px !important;
+  }
+}
+
+/* ==============================================================================
+   6. ULTRA-COMPACT SMARTPHONES (max-width: 360px)
+   ============================================================================== */
+@media (max-width: 360px) {
+  .top-bar {
+    padding: 6px 8px !important;
+  }
+
+  .viewport-content {
+    padding: 10px 8px calc(76px + env(safe-area-inset-bottom, 0px)) 8px !important;
+  }
+
+  #online-cards-container,
+  .cards-grid,
+  #playlists-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .media-card {
+    padding: 5px !important;
+  }
+
+  .card-title {
+    font-size: 11px !important;
+  }
+
+  .card-artist {
+    font-size: 10px !important;
+  }
+
+  .download-pill-btn span {
+    display: none !important;
+  }
+
+  .download-pill-btn {
+    padding: 4px 8px !important;
+    width: auto !important;
+    flex: none !important;
+  }
+
+  .player-artwork-box {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+  }
+
+  .player-track-title {
+    font-size: 12px !important;
+  }
+
+  .player-track-artist {
+    font-size: 10px !important;
+  }
+
+  .play-pause-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    font-size: 13px !important;
+  }
+
+  .control-buttons-row .ctrl-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 11px !important;
   }
 }
