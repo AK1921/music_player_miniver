@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "ak-media-studio",
   "rewrites": [
     { "source": "/api/youtube-search", "destination": "/api/youtube-search.js" },
     { "source": "/api/translate", "destination": "/api/translate.js" },
