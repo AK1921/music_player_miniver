@@ -194,20 +194,28 @@ async function fetchDirectYouTube(query: string): Promise<YouTubeTrack[]> {
 }
 
 /**
- * Fetch from local studio server endpoint if app is running in dev on same WiFi
+ * Fetch from Cloud Studio server or local dev endpoint.
+ * The production Vercel serverless API handles live YouTube queries with full CORS support.
  */
-async function fetchLocalStudioSearch(query: string): Promise<YouTubeTrack[]> {
+async function fetchStudioCloudSearch(query: string): Promise<YouTubeTrack[]> {
   const endpoints = [
-    `http://192.168.29.208:3000/api/youtube-search?q=${encodeURIComponent(query)}`,
+    `https://musicplayerminiver.vercel.app/api/youtube-search?q=${encodeURIComponent(query)}`,
+    `https://ak-media-studio.vercel.app/api/youtube-search?q=${encodeURIComponent(query)}`,
     `http://10.0.2.2:3000/api/youtube-search?q=${encodeURIComponent(query)}`, // Android Emulator
+    `http://192.168.29.208:3000/api/youtube-search?q=${encodeURIComponent(query)}`,
     `http://localhost:3000/api/youtube-search?q=${encodeURIComponent(query)}`,
   ];
 
   for (const ep of endpoints) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 2500);
-      const res = await fetch(ep, { signal: controller.signal });
+      const timeout = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(ep, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
       clearTimeout(timeout);
       if (res.ok) {
         const data = await res.json();
@@ -230,7 +238,7 @@ async function fetchLocalStudioSearch(query: string): Promise<YouTubeTrack[]> {
       }
     } catch (_) {}
   }
-  throw new Error('Local studio search unavailable');
+  throw new Error('Studio cloud search unavailable');
 }
 
 /**
@@ -280,7 +288,7 @@ export function filterOnlineByCategory(category: string): YouTubeTrack[] {
  * Primary Search Function:
  * 1. Checks memory cache
  * 2. Matches curated catalog instantly
- * 3. Fetches live YouTube results asynchronously
+ * 3. Fetches live results via Cloud Production Server (with direct scraper fallback)
  * 4. Merges & deduplicates preserving high relevance
  */
 export async function searchYouTubeTracks(
@@ -301,17 +309,16 @@ export async function searchYouTubeTracks(
   // 2. Instant curated matches
   const curatedMatches = searchCuratedCatalog(cleanQuery);
 
-  // 3. Live search from YouTube or Local Server
+  // 3. Live search: Query Cloud Studio Search first (rock-solid on mobile Android APKs)
   let liveResults: YouTubeTrack[] = [];
   try {
-    // Try direct YouTube search first
-    liveResults = await fetchDirectYouTube(cleanQuery);
-  } catch (err1) {
+    liveResults = await fetchStudioCloudSearch(cleanQuery);
+  } catch (errCloud) {
     try {
-      // Fallback to local server proxy if on network
-      liveResults = await fetchLocalStudioSearch(cleanQuery);
+      // Fallback to direct YouTube scraping if cloud is unreachable
+      liveResults = await fetchDirectYouTube(cleanQuery);
     } catch (_) {
-      // Direct live search unavailable; continue with curated
+      // Live search unavailable; continue with curated matches
     }
   }
 
