@@ -155,98 +155,152 @@ html, body {
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 12px 12px calc(80px + env(safe-area-inset-bottom, 0px)) 12px !important;
+    padding: 10px 10px calc(80px + env(safe-area-inset-bottom, 0px)) 10px !important;
     max-width: 100vw !important;
     box-sizing: border-box !important;
   }
 
-  /* Compact Responsive Top Bar */
+  /* --------------------------------------------------------------------------
+     TOP BAR: SINGLE NEAT ROW (Hamburger + Search + Theme Palette + Cloud Sync)
+     -------------------------------------------------------------------------- */
   .top-bar {
-    height: auto !important;
-    min-height: auto !important;
-    padding: 8px 12px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    padding: 6px 10px !important;
     display: flex !important;
-    flex-wrap: wrap !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 8px !important;
+    gap: 6px !important;
     position: sticky !important;
     top: 0 !important;
-    z-index: 100 !important;
+    z-index: 1000 !important;
     background: var(--bg-surface) !important;
     border-bottom: 1px solid var(--border) !important;
     box-shadow: var(--shadow-xs) !important;
+    box-sizing: border-box !important;
   }
 
-  /* Left Toggle Button */
+  /* 1. Hamburger Toggle Button */
   .top-bar .collapse-toggle-btn {
     order: 1 !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
     border-radius: 8px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Top Right Action Pills */
-  .top-actions {
+  /* 2. Fluid Search Box (Search Input + Mic + Action Icon) */
+  .search-box-container {
     order: 2 !important;
-    margin-left: auto !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .search-input-wrapper {
+    height: 36px !important;
+    padding: 0 4px 0 10px !important;
+    border-radius: 20px !important;
+    gap: 4px !important;
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    width: 100% !important;
   }
 
-  .top-actions .pill-btn {
-    padding: 6px 10px !important;
-    font-size: 11.5px !important;
-    min-height: 34px !important;
+  .search-input {
+    font-size: 12px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    line-height: normal !important;
   }
 
-  .top-actions .pill-btn span:not(.theme-color-dot) {
+  .search-btn {
+    padding: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .search-btn span {
     display: none !important;
   }
 
+  .search-btn::before {
+    content: "\f002";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 11px;
+  }
+
+  .search-mic-icon-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .search-clear-btn {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* 3. Action Buttons (Theme Palette + Cloud Sync) */
+  .top-actions {
+    order: 3 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .top-actions .pill-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .top-actions .pill-btn span,
   .top-actions .pill-btn .fa-chevron-down {
     display: none !important;
   }
 
-  /* Full-Width Search Input Row */
-  .search-box-container {
-    order: 3 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  .top-actions .pill-btn i {
+    font-size: 14px !important;
     margin: 0 !important;
-    flex: 1 0 100% !important;
-  }
-
-  .search-input-wrapper {
-    height: 40px !important;
-    padding: 3px 6px 3px 12px !important;
-    border-radius: 20px !important;
-    gap: 6px !important;
-  }
-
-  .search-input {
-    font-size: 13px !important;
-    margin-left: 2px !important;
-  }
-
-  .search-mic-icon-btn {
-    width: 30px !important;
-    height: 30px !important;
-    font-size: 12px !important;
-  }
-
-  .search-btn {
-    padding: 5px 12px !important;
-    font-size: 11.5px !important;
-    border-radius: 16px !important;
-    min-height: 30px !important;
   }
 
   /* Theme Dropdown Positioned Safely on Mobile */
@@ -268,7 +322,7 @@ html, body {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 10px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
   }
 
   .section-head > div:last-child {
@@ -281,7 +335,7 @@ html, body {
   }
 
   .hero-title {
-    font-size: 20px !important;
+    font-size: 19px !important;
     margin-bottom: 2px !important;
     line-height: 1.25 !important;
   }
@@ -290,6 +344,38 @@ html, body {
     font-size: 11.5px !important;
     line-height: 1.4 !important;
     margin-bottom: 0 !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     LOCAL MEDIA ACTION BUTTONS ROW (Health, Folder, Upload Media)
+     -------------------------------------------------------------------------- */
+  .local-actions-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  .local-actions-row::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .local-actions-row .primary-btn,
+  .local-actions-row .secondary-btn {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 7px 10px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    min-height: 34px !important;
+    border-radius: 8px !important;
   }
 
   /* Category Filter Chips Horizontal Swiper */
@@ -303,7 +389,7 @@ html, body {
     scrollbar-width: none !important;
     gap: 6px !important;
     padding: 2px 2px 8px 2px !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 10px !important;
   }
 
   .filter-tabs-row::-webkit-scrollbar,
@@ -329,7 +415,7 @@ html, body {
     scrollbar-width: none !important;
     gap: 8px !important;
     padding: 4px 2px 10px 2px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
   }
 
   .folders-grid::-webkit-scrollbar {
@@ -371,7 +457,7 @@ html, body {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
   }
 
   .stat-card {
@@ -561,30 +647,61 @@ html, body {
     justify-content: center !important;
   }
 
-  /* Modals Overlay & Card on Mobile */
-  .modal-overlay {
-    padding: 10px !important;
-    align-items: flex-end !important;
-    z-index: 100000 !important;
+  /* --------------------------------------------------------------------------
+     MODALS OVERLAY: FLOATING CLEANLY ABOVE ALL VIEWS & BOTTOM FOOTER
+     -------------------------------------------------------------------------- */
+  .modal-overlay,
+  .modal-overlay.show,
+  #settings-modal,
+  #ai-assistant-modal,
+  #equalizer-modal,
+  #sleep-timer-modal,
+  #supabase-account-modal,
+  #cross-sync-modal,
+  #delete-confirm-modal,
+  #rename-folder-modal,
+  #move-file-modal,
+  #edit-playlist-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 200000 !important;
+    background: rgba(10, 15, 30, 0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .modal-overlay.show {
+    display: flex !important;
   }
 
   .modal-card {
     width: 100% !important;
-    max-width: 100% !important;
-    max-height: 90vh !important;
-    border-radius: 18px 18px 12px 12px !important;
+    max-width: min(540px, 94vw) !important;
+    max-height: calc(100dvh - 36px) !important;
+    border-radius: 18px !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
     box-sizing: border-box !important;
+    margin: auto !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
   }
 
-  .modal-header {
-    padding: 14px 16px !important;
+  .modal-head {
+    padding: 12px 16px !important;
   }
 
   .modal-body {
-    padding: 14px 16px !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
   }
 
+  .modal-actions-footer,
   .modal-footer {
     padding: 10px 16px !important;
     gap: 8px !important;
@@ -607,6 +724,125 @@ html, body {
     font-size: 12px !important;
     padding: 6px 12px !important;
     min-height: 34px !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     SETTINGS -> ACCOUNT / PROFILE FORM & BUTTONS (NEVER BURST OUT OF BOX)
+     -------------------------------------------------------------------------- */
+  .profile-btn-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 6px !important;
+    box-sizing: border-box !important;
+  }
+
+  .profile-btn-row button {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  #profile-password-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #profile-password-form .form-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     AI ASSISTANT MODAL RESPONSIVE FIXES
+     -------------------------------------------------------------------------- */
+  #ai-assistant-modal .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .ai-mood-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    max-width: 100% !important;
+  }
+
+  .ai-mood-pill {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .ai-prompt-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .ai-search-input-box {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .ai-prompt-go {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     APP VAULT VIEW ON MOBILE
+     -------------------------------------------------------------------------- */
+  .vault-shield-wrap {
+    padding: 20px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .shield-disc {
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 30px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .vault-passphrase-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .vault-passphrase-form div[style*="display: flex"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .vault-passphrase-form button {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+  }
+
+  #view-vault .section-head > div:last-child {
+    display: flex !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  #view-vault .section-head button {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
   }
 
   /* Full Theater Modal on Mobile */
@@ -769,15 +1005,32 @@ html, body {
 }
 
 /* ==============================================================================
-   6. ULTRA-COMPACT SMARTPHONES (max-width: 360px)
+   6. ULTRA-COMPACT SMARTPHONES (max-width: 420px)
+   ============================================================================== */
+@media (max-width: 420px) {
+  /* Use icon-only on very compact phones for local actions */
+  .local-actions-row .btn-text {
+    display: none !important;
+  }
+
+  .local-actions-row .primary-btn,
+  .local-actions-row .secondary-btn {
+    padding: 7px 12px !important;
+    flex: 1 !important;
+  }
+}
+
+/* ==============================================================================
+   7. ULTRA-COMPACT SMARTPHONES (max-width: 360px)
    ============================================================================== */
 @media (max-width: 360px) {
   .top-bar {
-    padding: 6px 8px !important;
+    padding: 4px 6px !important;
+    gap: 4px !important;
   }
 
   .viewport-content {
-    padding: 10px 8px calc(76px + env(safe-area-inset-bottom, 0px)) 8px !important;
+    padding: 8px 6px calc(76px + env(safe-area-inset-bottom, 0px)) 6px !important;
   }
 
   #online-cards-container,

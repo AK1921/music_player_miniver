@@ -210,6 +210,14 @@ function openCustomPaletteSettings() {
 }
 
 function setTheme(themeId, themeName) {
+  if (themeId === 'none' || themeId === 'default' || !themeId) {
+    themeId = 'frost-opal';
+    themeName = themeName || 'None (Default)';
+    try {
+      document.documentElement.removeAttribute('style');
+      localStorage.removeItem('ak_custom_palette');
+    } catch (_) { }
+  }
   themeId = themeId || 'frost-opal';
   document.documentElement.setAttribute('data-theme', themeId);
   if (document.documentElement.dataset) {
@@ -2996,6 +3004,18 @@ function closeSidebarMobile() {
   if (backdrop) backdrop.classList.remove('active');
 }
 
+// Automatically close mobile sidebar when any item inside is clicked
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 992) {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) {
+      if (e.target.closest('#sidebar a, #sidebar button:not(#btn-collapse-sidebar), #sidebar .vault-quick-card, #sidebar .brand-logo')) {
+        closeSidebarMobile();
+      }
+    }
+  }
+});
+
 function toggleSidebar() {
   toggleSidebarCollapse();
 }
@@ -4354,6 +4374,7 @@ function switchTab(tab) {
 }
 
 function openModal(id) {
+  closeSidebarMobile();
   const el = document.getElementById(id);
   if (el) el.classList.add('show');
 }
@@ -6537,7 +6558,7 @@ const VOICE_COMMANDS = {
   recognition: null,
   isListening: false,
   lastExecTime: 0,
-  debounceMs: 200,
+  debounceMs: 1200,
 
   init() {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -6854,22 +6875,19 @@ const VOICE_COMMANDS = {
   },
 
   scrollPage(delta) {
-    const scrollers = [
-      document.querySelector('.main-content'),
-      document.querySelector('.main-stage'),
-      document.getElementById('viewport'),
-      document.scrollingElement,
-      document.documentElement,
-      document.body,
-      window
-    ];
-    for (const el of scrollers) {
-      if (el && typeof el.scrollBy === 'function') {
-        try {
-          el.scrollBy({ top: delta, behavior: 'smooth' });
-        } catch (e) { }
-      }
+    const viewport = document.getElementById('viewport');
+    if (viewport && viewport.scrollHeight > viewport.clientHeight) {
+      viewport.scrollBy({ top: delta, behavior: 'smooth' });
+      return;
     }
+    const stage = document.querySelector('.main-stage') || document.documentElement || document.body;
+    if (stage && typeof stage.scrollBy === 'function') {
+      try {
+        stage.scrollBy({ top: delta, behavior: 'smooth' });
+        return;
+      } catch (_) { }
+    }
+    window.scrollBy({ top: delta, behavior: 'smooth' });
   }
 };
 
