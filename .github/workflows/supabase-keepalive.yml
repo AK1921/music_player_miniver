@@ -1,0 +1,50 @@
+name: Supabase Keep-Alive Cron Job
+
+on:
+  schedule:
+    # Runs every 3 days at 04:00 UTC (well before Supabase's 7-day inactivity pause threshold)
+    - cron: '0 4 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI anytime
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping Supabase REST API & Vercel Keepalive Endpoint
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://sekujdfctxvuomoccugy.supabase.co' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_a0pqoY9UHrl4cgfOvMA25w_qIrUMxgB' }}
+          HOSTED_VERCEL_URL: 'https://musicplayerminiver.vercel.app'
+        run: |
+          echo "=========================================================="
+          echo " Starting Supabase Keep-Alive Ping Cron Job"
+          echo " Time: $(date -u)"
+          echo "=========================================================="
+          
+          # 1. Ping the Vercel hosted serverless keepalive endpoint
+          echo "--> Step 1: Pinging Hosted Vercel Keepalive Endpoint..."
+          VERCEL_RES=$(curl -s -w "\n%{http_code}" -X GET "${HOSTED_VERCEL_URL}/api/keepalive" || true)
+          echo "$VERCEL_RES"
+
+          # 2. Directly ping Supabase REST API endpoint
+          echo "--> Step 2: Direct REST Ping to Supabase..."
+          SUPA_CLEAN_URL="${SUPABASE_URL%/}"
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "User-Agent: GitHub-Actions-Supabase-KeepAlive" \
+            "${SUPA_CLEAN_URL}/rest/v1/" || echo "000")
+
+          echo "Supabase HTTP Response Code: ${STATUS_CODE}"
+
+          if [ "$STATUS_CODE" -ge 200 ] && [ "$STATUS_CODE" -lt 400 ]; then
+            echo "✅ Success: Supabase project is active and healthy. 7-day inactivity timer reset."
+          elif [ "$STATUS_CODE" -eq 503 ] || [ "$STATUS_CODE" -eq 000 ]; then
+            echo "⚠️ Notice: Supabase returned ${STATUS_CODE}. If the project was already paused in Supabase free tier,"
+            echo "please log in to https://supabase.com/dashboard and click 'Restore project'."
+            echo "Once restored, this workflow will keep it active permanently."
+          else
+            echo "ℹ️ Supabase responded with status ${STATUS_CODE}. Activity registered."
+          fi

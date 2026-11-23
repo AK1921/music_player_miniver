@@ -1,9 +1,16 @@
 {
   "version": 2,
   "name": "ak-media-studio",
+  "crons": [
+    {
+      "path": "/api/keepalive",
+      "schedule": "0 4 */3 * *"
+    }
+  ],
   "rewrites": [
     { "source": "/api/youtube-search", "destination": "/api/youtube-search.js" },
     { "source": "/api/translate", "destination": "/api/translate.js" },
+    { "source": "/api/keepalive", "destination": "/api/keepalive.js" },
     { "source": "/", "destination": "/web/index.html" },
     { "source": "/(.*)", "destination": "/web/$1" }
   ]

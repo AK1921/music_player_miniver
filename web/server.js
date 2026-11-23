@@ -126,6 +126,12 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = urlModule.parse(req.url, true);
   const pathname = parsedUrl.pathname;
 
+  // Supabase Keep-Alive Health Endpoint
+  if (pathname === '/api/keepalive') {
+    const keepaliveHandler = require('../api/keepalive');
+    return keepaliveHandler(req, res);
+  }
+
   if (pathname === '/api/youtube-search') {
     const query = parsedUrl.query.q;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
