@@ -101,6 +101,8 @@ export interface Track {
   album?: string;
   artwork?: string;
   duration?: number; // seconds
+  youtubeId?: string;
+  isOnline?: boolean;
 }
 
 export interface Note {

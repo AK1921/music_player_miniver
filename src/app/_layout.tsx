@@ -25,6 +25,7 @@ import { useVaultStore } from '../stores/vaultStore';
 import { usePlayerStore } from '../stores/playerStore';
 import { NowPlayingModal } from '../components/player/NowPlayingModal';
 import { MiniPlayerBar } from '../components/player/MiniPlayerBar';
+import { YouTubeAudioBridge } from '../components/player/YouTubeAudioBridge';
 
 export default function RootLayout() {
   const { theme } = useThemeStore();
@@ -120,6 +121,9 @@ export default function RootLayout() {
               }}
             />
           </Stack>
+
+          {/* Persistent Headless YouTube Audio Bridge */}
+          <YouTubeAudioBridge />
 
           {/* Persistent Floating Mini-Player */}
           <MiniPlayerBar />

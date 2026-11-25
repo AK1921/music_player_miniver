@@ -22,6 +22,7 @@ import { VideoView, useVideoPlayer } from 'expo-video';
 import { useThemeStore } from '../../stores/themeStore';
 import { usePlayerStore } from '../../stores/playerStore';
 import { pickMediaFromLibrary } from '../../services/mediaPicker';
+import { YouTubePlayerModal } from '../viewers/YouTubePlayerModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -63,6 +64,7 @@ export const NowPlayingModal: React.FC = () => {
     visualizerBars,
     isExpandedNowPlaying,
     setExpandedNowPlaying,
+    playTrack,
     togglePlayPause,
     playNext,
     playPrevious,
@@ -89,6 +91,7 @@ export const NowPlayingModal: React.FC = () => {
   const [showLyrics, setShowLyrics] = useState(false);
   const [showEqualizer, setShowEqualizer] = useState(false);
   const [showSleepTimer, setShowSleepTimer] = useState(false);
+  const [ytPlayerVisible, setYtPlayerVisible] = useState(false);
 
   // Auto-scroll ref for synchronized lyrics
   const lyricsScrollRef = useRef<any>(null);
@@ -265,6 +268,17 @@ export const NowPlayingModal: React.FC = () => {
                 color={showQueue ? '#FFF' : theme.text}
               />
             </TouchableOpacity>
+
+            {/* Watch YouTube Video Button if this is an online track */}
+            {Boolean(currentTrack.youtubeId) && (
+              <TouchableOpacity
+                style={[styles.headerBtn, { backgroundColor: '#EF4444' }]}
+                onPress={() => setYtPlayerVisible(true)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="logo-youtube" size={17} color="#FFF" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -866,6 +880,15 @@ export const NowPlayingModal: React.FC = () => {
             </View>
           </View>
         </Modal>
+
+        {/* Dedicated YouTube Video Player Modal */}
+        <YouTubePlayerModal
+          visible={ytPlayerVisible}
+          onClose={() => setYtPlayerVisible(false)}
+          track={currentTrack}
+          queue={queue}
+          onTrackChange={t => playTrack(t, queue)}
+        />
       </View>
     </Modal>
   );

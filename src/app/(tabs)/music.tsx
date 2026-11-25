@@ -28,7 +28,11 @@ import {
   searchYouTubeTracks,
   CURATED_YOUTUBE_CATALOG,
   filterOnlineByCategory,
+  getOnlineCategoryTracks,
   getTrendingMusic,
+  rankMusicRecommendations,
+  searchCuratedCatalog,
+  youtubeTrackToAppTrack,
   YouTubeTrack,
 } from '../../services/youtubeService';
 import {
@@ -553,31 +557,66 @@ export default function MusicScreen() {
   const [ytPlayerVisible, setYtPlayerVisible] = useState(false);
   const [selectedYtTrack, setSelectedYtTrack] = useState<any>(null);
 
-  const handlePlayYouTubeTrack = (track: any) => {
+  // Watch video in dedicated full theater player
+  const handleWatchVideo = (track: any) => {
     setSelectedYtTrack(track);
     setYtPlayerVisible(true);
   };
+  const handlePlayYouTubeTrack = handleWatchVideo;
 
   const [activeTab, setActiveTab] = useState<'online' | 'tracks' | 'videos' | 'playlists' | 'recent'>('online');
-  const [onlineTracks, setOnlineTracks] = useState<YouTubeTrack[]>(CURATED_YOUTUBE_CATALOG);
+  const [onlineTracks, setOnlineTracks] = useState<YouTubeTrack[]>(() => rankMusicRecommendations());
   const [isOnlineLoading, setIsOnlineLoading] = useState(false);
   const [onlineSelectedCategory, setOnlineSelectedCategory] = useState('all');
   const [featuresOpen, setFeaturesOpen] = useState(false);
 
-  const handleCategorySelect = (catId: string) => {
+  // Automatically load recommendations when Online tab is opened
+  const loadInitialOnlineMusic = async () => {
+    setIsOnlineLoading(true);
+    try {
+      const recs = rankMusicRecommendations({ recentlyPlayed });
+      setOnlineTracks(recs);
+      const live = await getTrendingMusic(24);
+      if (live && live.length > 0) {
+        const merged = rankMusicRecommendations({ matches: live, recentlyPlayed });
+        setOnlineTracks(merged);
+      }
+    } catch (_) {
+      setOnlineTracks(rankMusicRecommendations());
+    } finally {
+      setIsOnlineLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'online') {
+      loadInitialOnlineMusic();
+    }
+  }, [activeTab]);
+
+  const handleCategorySelect = async (catId: string) => {
     setOnlineSelectedCategory(catId);
     setOnlineSearchText('');
-    if (catId === 'all') {
-      setOnlineTracks(CURATED_YOUTUBE_CATALOG);
-    } else {
+    setIsOnlineLoading(true);
+    try {
+      if (catId === 'all') {
+        const recs = rankMusicRecommendations({ recentlyPlayed });
+        setOnlineTracks(recs);
+      } else {
+        const tracks = await getOnlineCategoryTracks(catId);
+        setOnlineTracks(tracks);
+      }
+    } catch (_) {
       setOnlineTracks(filterOnlineByCategory(catId));
+    } finally {
+      setIsOnlineLoading(false);
     }
   };
 
   const handleSearchOnline = async (queryText?: string) => {
     const q = (queryText !== undefined ? queryText : onlineSearchText).trim();
     if (!q) {
-      setOnlineTracks(CURATED_YOUTUBE_CATALOG);
+      loadInitialOnlineMusic();
       return;
     }
     setIsOnlineLoading(true);
@@ -586,6 +625,7 @@ export default function MusicScreen() {
       setOnlineTracks(results);
     } catch (err) {
       console.warn('Online search error:', err);
+      setOnlineTracks(searchCuratedCatalog(q));
     } finally {
       setIsOnlineLoading(false);
     }
@@ -594,7 +634,14 @@ export default function MusicScreen() {
   const handleClearOnlineSearch = () => {
     setOnlineSearchText('');
     setOnlineSelectedCategory('all');
-    setOnlineTracks(CURATED_YOUTUBE_CATALOG);
+    loadInitialOnlineMusic();
+  };
+
+  // Play Online Song in Background Music Player (MiniPlayerBar & NowPlayingModal)
+  const handlePlayOnlineTrack = (track: YouTubeTrack) => {
+    const appTrack = youtubeTrackToAppTrack(track);
+    const queueTracks = onlineTracks.map(t => youtubeTrackToAppTrack(t));
+    playTrack(appTrack, queueTracks);
   };
 
   const handleAddOnlineTrackToPlaylist = (track: YouTubeTrack) => {
@@ -604,6 +651,8 @@ export default function MusicScreen() {
       artist: track.artist,
       artwork: track.artwork,
       url: track.url,
+      youtubeId: track.youtubeId,
+      isOnline: true,
       duration: track.duration || 210,
     } as any);
     setPlaylistModalVisible(true);
@@ -691,7 +740,11 @@ export default function MusicScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchMedia();
+    if (activeTab === 'online') {
+      await loadInitialOnlineMusic();
+    } else {
+      await fetchMedia();
+    }
     setRefreshing(false);
   };
 
@@ -1434,61 +1487,164 @@ export default function MusicScreen() {
             {/* Grid View */}
             {!isOnlineLoading && onlineViewMode === 'grid' && (
               <View style={styles.onlineGridContainer}>
-                {onlineTracks.map((track, idx) => (
-                  <View
-                    key={`online-grid-${track.youtubeId || track.id}-${idx}`}
-                    style={[
-                      styles.onlineGridCard,
-                      { backgroundColor: theme.card, borderColor: theme.border },
-                    ]}
-                  >
-                    <TouchableOpacity
-                      onPress={() => handlePlayYouTubeTrack(track)}
-                      activeOpacity={0.85}
-                      style={styles.onlineThumbBox}
+                {onlineTracks.map((track, idx) => {
+                  const isCurrentPlaying = currentTrack?.youtubeId === track.youtubeId && isPlaying;
+                  return (
+                    <View
+                      key={`online-grid-${track.youtubeId || track.id}-${idx}`}
+                      style={[
+                        styles.onlineGridCard,
+                        {
+                          backgroundColor: isCurrentPlaying ? theme.primaryGlow : theme.card,
+                          borderColor: isCurrentPlaying ? theme.primary : theme.border,
+                        },
+                      ]}
                     >
-                      <Image
-                        source={{ uri: track.artwork }}
-                        style={styles.onlineGridThumb}
-                        resizeMode="cover"
-                      />
-                      <View style={styles.onlinePlayOverlay}>
-                        <View style={[styles.onlinePlayIconCircle, { backgroundColor: theme.primary }]}>
-                          <Ionicons name="play" size={16} color="#FFF" style={{ marginLeft: 2 }} />
+                      <TouchableOpacity
+                        onPress={() => handlePlayOnlineTrack(track)}
+                        activeOpacity={0.85}
+                        style={styles.onlineThumbBox}
+                      >
+                        <Image
+                          source={{ uri: track.artwork }}
+                          style={styles.onlineGridThumb}
+                          resizeMode="cover"
+                        />
+                        <View style={styles.onlinePlayOverlay}>
+                          <View style={[styles.onlinePlayIconCircle, { backgroundColor: theme.primary }]}>
+                            <Ionicons
+                              name={isCurrentPlaying ? 'pause' : 'play'}
+                              size={16}
+                              color="#FFF"
+                              style={{ marginLeft: isCurrentPlaying ? 0 : 2 }}
+                            />
+                          </View>
+                        </View>
+                        {track.duration ? (
+                          <View style={styles.onlineDurationBadge}>
+                            <Text style={styles.onlineDurationText}>
+                              {Math.floor(track.duration / 60)}:
+                              {String(track.duration % 60).padStart(2, '0')}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </TouchableOpacity>
+
+                      <View style={styles.onlineGridBody}>
+                        <TouchableOpacity onPress={() => handlePlayOnlineTrack(track)} activeOpacity={0.7}>
+                          <Text
+                            style={[styles.onlineGridTitle, { color: isCurrentPlaying ? theme.primary : theme.text }]}
+                            numberOfLines={2}
+                          >
+                            {track.title}
+                          </Text>
+                          <Text
+                            style={[styles.onlineGridArtist, { color: theme.textMuted }]}
+                            numberOfLines={1}
+                          >
+                            {track.artist}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <View style={styles.onlineGridFooter}>
+                          {track.views ? (
+                            <Text style={[styles.onlineViewsText, { color: theme.textSubtle }]}>
+                              {track.views}
+                            </Text>
+                          ) : (
+                            <View />
+                          )}
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <TouchableOpacity
+                              onPress={() => handleWatchVideo(track)}
+                              style={[styles.onlineAddPlBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="film-outline" size={15} color={theme.text} />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              onPress={() => handleAddOnlineTrackToPlaylist(track)}
+                              style={[styles.onlineAddPlBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="add" size={16} color={theme.primary} />
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       </View>
-                      {track.duration ? (
-                        <View style={styles.onlineDurationBadge}>
-                          <Text style={styles.onlineDurationText}>
-                            {Math.floor(track.duration / 60)}:
-                            {String(track.duration % 60).padStart(2, '0')}
-                          </Text>
-                        </View>
-                      ) : null}
-                    </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
 
-                    <View style={styles.onlineGridBody}>
-                      <Text
-                        style={[styles.onlineGridTitle, { color: theme.text }]}
-                        numberOfLines={2}
-                      >
-                        {track.title}
-                      </Text>
-                      <Text
-                        style={[styles.onlineGridArtist, { color: theme.textMuted }]}
-                        numberOfLines={1}
-                      >
-                        {track.artist}
-                      </Text>
+            {/* List View */}
+            {!isOnlineLoading && onlineViewMode === 'list' && (
+              <View style={{ gap: 8 }}>
+                {onlineTracks.map((track, idx) => {
+                  const isCurrentPlaying = currentTrack?.youtubeId === track.youtubeId && isPlaying;
+                  return (
+                    <TouchableOpacity
+                      key={`online-list-${track.youtubeId || track.id}-${idx}`}
+                      style={[
+                        styles.onlineListCard,
+                        {
+                          backgroundColor: isCurrentPlaying ? theme.primaryGlow : theme.card,
+                          borderColor: isCurrentPlaying ? theme.primary : theme.border,
+                        },
+                      ]}
+                      onPress={() => handlePlayOnlineTrack(track)}
+                      activeOpacity={0.8}
+                    >
+                      <View style={styles.onlineListThumbWrapper}>
+                        <Image
+                          source={{ uri: track.artwork }}
+                          style={styles.onlineListThumb}
+                          resizeMode="cover"
+                        />
+                        {track.duration ? (
+                          <View style={styles.onlineListDurationBadge}>
+                            <Text style={styles.onlineDurationText}>
+                              {Math.floor(track.duration / 60)}:
+                              {String(track.duration % 60).padStart(2, '0')}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
 
-                      <View style={styles.onlineGridFooter}>
-                        {track.views ? (
+                      <View style={styles.onlineListMeta}>
+                        <Text
+                          style={[styles.onlineListTitle, { color: isCurrentPlaying ? theme.primary : theme.text }]}
+                          numberOfLines={1}
+                        >
+                          {track.title}
+                        </Text>
+                        <Text
+                          style={[styles.onlineListArtist, { color: theme.textMuted }]}
+                          numberOfLines={1}
+                        >
+                          {track.artist}
+                        </Text>
+                        {track.views && (
                           <Text style={[styles.onlineViewsText, { color: theme.textSubtle }]}>
                             {track.views}
                           </Text>
-                        ) : (
-                          <View />
                         )}
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <TouchableOpacity
+                          onPress={() => handleWatchVideo(track)}
+                          style={[styles.onlineAddPlBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                          activeOpacity={0.7}
+                        >
+                          <Ionicons name="film-outline" size={15} color={theme.text} />
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                           onPress={() => handleAddOnlineTrackToPlaylist(track)}
                           style={[styles.onlineAddPlBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
@@ -1497,83 +1653,24 @@ export default function MusicScreen() {
                         >
                           <Ionicons name="add" size={16} color={theme.primary} />
                         </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
 
-            {/* List View */}
-            {!isOnlineLoading && onlineViewMode === 'list' && (
-              <View style={{ gap: 8 }}>
-                {onlineTracks.map((track, idx) => (
-                  <TouchableOpacity
-                    key={`online-list-${track.youtubeId || track.id}-${idx}`}
-                    style={[
-                      styles.onlineListCard,
-                      { backgroundColor: theme.card, borderColor: theme.border },
-                    ]}
-                    onPress={() => handlePlayYouTubeTrack(track)}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.onlineListThumbWrapper}>
-                      <Image
-                        source={{ uri: track.artwork }}
-                        style={styles.onlineListThumb}
-                        resizeMode="cover"
-                      />
-                      {track.duration ? (
-                        <View style={styles.onlineListDurationBadge}>
-                          <Text style={styles.onlineDurationText}>
-                            {Math.floor(track.duration / 60)}:
-                            {String(track.duration % 60).padStart(2, '0')}
-                          </Text>
+                        <View
+                          style={[
+                            styles.onlinePlayIconCircle,
+                            { backgroundColor: theme.primary, width: 34, height: 34, borderRadius: 17 },
+                          ]}
+                        >
+                          <Ionicons
+                            name={isCurrentPlaying ? 'pause' : 'play'}
+                            size={15}
+                            color="#FFF"
+                            style={{ marginLeft: isCurrentPlaying ? 0 : 2 }}
+                          />
                         </View>
-                      ) : null}
-                    </View>
-
-                    <View style={styles.onlineListMeta}>
-                      <Text
-                        style={[styles.onlineListTitle, { color: theme.text }]}
-                        numberOfLines={1}
-                      >
-                        {track.title}
-                      </Text>
-                      <Text
-                        style={[styles.onlineListArtist, { color: theme.textMuted }]}
-                        numberOfLines={1}
-                      >
-                        {track.artist}
-                      </Text>
-                      {track.views && (
-                        <Text style={[styles.onlineViewsText, { color: theme.textSubtle }]}>
-                          {track.views}
-                        </Text>
-                      )}
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                      <TouchableOpacity
-                        onPress={() => handleAddOnlineTrackToPlaylist(track)}
-                        style={[styles.onlineAddPlBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="add" size={16} color={theme.primary} />
-                      </TouchableOpacity>
-
-                      <View
-                        style={[
-                          styles.onlinePlayIconCircle,
-                          { backgroundColor: theme.primary, width: 34, height: 34, borderRadius: 17 },
-                        ]}
-                      >
-                        <Ionicons name="play" size={15} color="#FFF" style={{ marginLeft: 2 }} />
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             )}
           </View>
@@ -2339,11 +2436,7 @@ export default function MusicScreen() {
                           style={[styles.actionBtn, { backgroundColor: theme.primary, paddingHorizontal: 16 }]}
                           onPress={() => {
                             const first = plTracks[0];
-                            if ((first as any).isOnline || (first as any).youtubeId) {
-                              handlePlayYouTubeTrack(first);
-                            } else {
-                              playTrack(first, plTracks);
-                            }
+                            playTrack(first, plTracks);
                           }}
                         >
                           <Ionicons name="play" size={16} color="#FFF" />
@@ -2398,11 +2491,7 @@ export default function MusicScreen() {
                         <TouchableOpacity
                           style={styles.trackContentArea}
                           onPress={() => {
-                            if ((track as any).isOnline || (track as any).youtubeId) {
-                              handlePlayYouTubeTrack(track);
-                            } else {
-                              playTrack(track, plTracks);
-                            }
+                            playTrack(track, plTracks);
                           }}
                           activeOpacity={0.8}
                         >
@@ -2424,9 +2513,7 @@ export default function MusicScreen() {
 
                         <TouchableOpacity
                           onPress={() => {
-                            if ((track as any).isOnline || (track as any).youtubeId) {
-                              handlePlayYouTubeTrack(track);
-                            } else if (isSelected) {
+                            if (isSelected) {
                               togglePlayPause();
                             } else {
                               playTrack(track, plTracks);

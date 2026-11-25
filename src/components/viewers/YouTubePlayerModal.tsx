@@ -56,17 +56,14 @@ export const YouTubePlayerModal: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(true);
   const webViewRef = useRef<any>(null);
 
-  // Automatically pause any active local audio when YouTube starts
+  // Automatically pause any active background music when video viewing starts
   useEffect(() => {
     if (visible && track) {
       setIsLoading(true);
       setHasPlayerError(false);
       setIsPlaying(true);
       try {
-        const { isPlaying: localPlaying, sound } = usePlayerStore.getState();
-        if (localPlaying && sound) {
-          sound.pause();
-        }
+        usePlayerStore.getState().pauseForExternalVideo();
       } catch (_) {}
     }
   }, [visible, track?.id]);
@@ -130,7 +127,7 @@ export const YouTubePlayerModal: React.FC<Props> = ({
                 showinfo: 0,
                 modestbranding: 1,
                 fs: 1,
-                origin: 'https://www.youtube.com',
+                origin: 'https://musicplayerminiver.vercel.app',
                 enablejsapi: 1
               },
               events: {
@@ -251,6 +248,11 @@ export const YouTubePlayerModal: React.FC<Props> = ({
   };
 
   const handleClose = () => {
+    try {
+      sendCommand('pause');
+      sendCommand('stop');
+    } catch (_) {}
+    setIsPlaying(false);
     setIsPip(false);
     setHasPlayerError(false);
     onClose();
@@ -358,13 +360,20 @@ export const YouTubePlayerModal: React.FC<Props> = ({
                   <Ionicons name="logo-youtube" size={24} color="#EF4444" />
                   <Text style={styles.pipErrorText}>Watch on YouTube</Text>
                 </TouchableOpacity>
+              ) : Platform.OS === 'web' ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&rel=0&controls=1&origin=https://musicplayerminiver.vercel.app`}
+                  style={{ width: '100%', height: '100%', border: 'none' } as any}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               ) : (
                 <WebView
                   ref={webViewRef}
                   originWhitelist={['*']}
                   source={{
                     html: generateEmbedHtml(ytid),
-                    baseUrl: 'https://www.youtube.com',
+                    baseUrl: 'https://musicplayerminiver.vercel.app',
                   }}
                   style={styles.webview}
                   allowsInlineMediaPlayback={true}
@@ -374,7 +383,7 @@ export const YouTubePlayerModal: React.FC<Props> = ({
                   allowsFullscreenVideo={true}
                   mixedContentMode="always"
                   androidLayerType="hardware"
-                  userAgent="Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
+                  userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
                   onMessage={handleWebViewMessage}
                   onError={() => setHasPlayerError(true)}
                 />
@@ -447,26 +456,35 @@ export const YouTubePlayerModal: React.FC<Props> = ({
             </View>
           ) : (
             <View style={{ flex: 1, position: 'relative' }}>
-              <WebView
-                ref={webViewRef}
-                originWhitelist={['*']}
-                source={{
-                  html: generateEmbedHtml(ytid),
-                  baseUrl: 'https://www.youtube.com',
-                }}
-                style={styles.webview}
-                allowsInlineMediaPlayback={true}
-                mediaPlaybackRequiresUserAction={false}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                allowsFullscreenVideo={true}
-                mixedContentMode="always"
-                androidLayerType="hardware"
-                userAgent="Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
-                onMessage={handleWebViewMessage}
-                onError={() => setHasPlayerError(true)}
-              />
-              {isLoading && (
+              {Platform.OS === 'web' ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&rel=0&controls=1&origin=https://musicplayerminiver.vercel.app`}
+                  style={{ width: '100%', height: '100%', border: 'none' } as any}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <WebView
+                  ref={webViewRef}
+                  originWhitelist={['*']}
+                  source={{
+                    html: generateEmbedHtml(ytid),
+                    baseUrl: 'https://musicplayerminiver.vercel.app',
+                  }}
+                  style={styles.webview}
+                  allowsInlineMediaPlayback={true}
+                  mediaPlaybackRequiresUserAction={false}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+                  allowsFullscreenVideo={true}
+                  mixedContentMode="always"
+                  androidLayerType="hardware"
+                  userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+                  onMessage={handleWebViewMessage}
+                  onError={() => setHasPlayerError(true)}
+                />
+              )}
+              {isLoading && Platform.OS !== 'web' && (
                 <View style={styles.loadingOverlay}>
                   <ActivityIndicator size="large" color={theme.primary} />
                   <Text style={{ color: '#FFF', fontSize: 12, marginTop: 8, fontWeight: '600' }}>

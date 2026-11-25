@@ -10,6 +10,14 @@ import { Track, Playlist } from '../types';
 import { NativeAudio, SoundInstance, getUniqueTrackArtwork } from '../services/nativeAudio';
 import { StorageService } from '../services/storage';
 
+export interface YouTubeBridgeControls {
+  loadVideo: (videoId: string) => void;
+  playVideo: () => void;
+  pauseVideo: () => void;
+  stopVideo: () => void;
+  seekTo: (seconds: number) => void;
+}
+
 const PLAYLISTS_CACHE_FILE = `${FileSystem.documentDirectory || ''}nexora_playlists.json`;
 
 async function savePlaylistsCache(playlists: Playlist[]) {
@@ -58,8 +66,11 @@ interface PlayerState {
   equalizerTreble: number;
   currentLyrics: { time: number; text: string }[];
   isLyricsLoading: boolean;
+  youtubeBridge: YouTubeBridgeControls | null;
 
   // Actions
+  registerYouTubeBridge: (bridge: YouTubeBridgeControls | null) => void;
+  pauseForExternalVideo: () => void;
   initializeAudio: () => Promise<void>;
   playTrack: (track: Track, newQueue?: Track[]) => Promise<void>;
   togglePlayPause: () => Promise<void>;
@@ -163,6 +174,23 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   equalizerTreble: 0,
   currentLyrics: [],
   isLyricsLoading: false,
+  youtubeBridge: null,
+
+  registerYouTubeBridge: (bridge: YouTubeBridgeControls | null) => {
+    set({ youtubeBridge: bridge });
+  },
+
+  pauseForExternalVideo: () => {
+    const { sound, youtubeBridge } = get();
+    if (youtubeBridge) {
+      try { youtubeBridge.pauseVideo(); } catch (_) {}
+    }
+    if (sound) {
+      try { sound.pause(); } catch (_) {}
+    }
+    set({ isPlaying: false, isBuffering: false });
+    stopVisualizer(set);
+  },
 
   fetchPlaylists: async () => {
     try {
@@ -200,6 +228,51 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
           ? track.artwork
           : getUniqueTrackArtwork(track.title, track.artist);
       const finalTrack = { ...track, artwork };
+
+      // Extract or normalize YouTube ID if present
+      let ytid = finalTrack.youtubeId;
+      if (!ytid && finalTrack.url) {
+        const m = finalTrack.url.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([A-Za-z0-9_-]{11})/);
+        if (m && m[1]) ytid = m[1];
+      }
+      if (!ytid && finalTrack.id && finalTrack.id.startsWith('yt_') && finalTrack.id.length === 14) {
+        ytid = finalTrack.id.slice(3);
+      }
+
+      // If online YouTube track -> Route to YouTube Audio Bridge
+      if (ytid) {
+        finalTrack.youtubeId = ytid;
+        finalTrack.isOnline = true;
+
+        set({
+          sound: null,
+          currentTrack: finalTrack,
+          queue: queue.map(t => (t.id === finalTrack.id ? finalTrack : t)),
+          queueIndex: index >= 0 ? index : 0,
+          isBuffering: true,
+          isPlaying: true,
+          positionMs: 0,
+          durationMs: finalTrack.duration ? finalTrack.duration * 1000 : 215000,
+        });
+
+        startVisualizer(set);
+
+        const { youtubeBridge } = get();
+        if (youtubeBridge) {
+          youtubeBridge.loadVideo(ytid);
+        }
+
+        const recents = [finalTrack, ...get().recentlyPlayed.filter(t => t.id !== finalTrack.id)].slice(0, 20);
+        set({ recentlyPlayed: recents });
+        get().fetchLyrics(finalTrack);
+        return;
+      }
+
+      // Local audio track -> stop YouTube bridge if active
+      const { youtubeBridge } = get();
+      if (youtubeBridge) {
+        try { youtubeBridge.stopVideo(); } catch (_) {}
+      }
 
       // 1. INSTANT OPTIMISTIC UI: Switch state immediately without waiting for native player
       set({
@@ -261,11 +334,28 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   },
 
   togglePlayPause: async () => {
-    const { sound, isPlaying, currentTrack } = get();
-    if (!sound) {
-      if (currentTrack) {
-        await get().playTrack(currentTrack);
+    const { sound, isPlaying, currentTrack, youtubeBridge } = get();
+    if (!currentTrack) return;
+
+    if (currentTrack.youtubeId) {
+      if (isPlaying) {
+        set({ isPlaying: false, isBuffering: false });
+        stopVisualizer(set);
+        if (youtubeBridge) {
+          try { youtubeBridge.pauseVideo(); } catch (_) {}
+        }
+      } else {
+        set({ isPlaying: true });
+        startVisualizer(set);
+        if (youtubeBridge) {
+          try { youtubeBridge.playVideo(); } catch (_) {}
+        }
       }
+      return;
+    }
+
+    if (!sound) {
+      await get().playTrack(currentTrack);
       return;
     }
 
@@ -290,7 +380,10 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   },
 
   stopAndDismiss: () => {
-    const { sound } = get();
+    const { sound, youtubeBridge } = get();
+    if (youtubeBridge) {
+      try { youtubeBridge.stopVideo(); } catch (_) {}
+    }
     if (sound) {
       try {
         sound.release();
@@ -300,6 +393,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     set({
       sound: null,
       isPlaying: false,
+      isBuffering: false,
       currentTrack: null,
       positionMs: 0,
       isExpandedNowPlaying: false,
@@ -308,7 +402,14 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   },
 
   seekTo: async (positionMillis: number) => {
-    const { sound } = get();
+    const { sound, currentTrack, youtubeBridge } = get();
+    if (currentTrack?.youtubeId && youtubeBridge) {
+      try {
+        youtubeBridge.seekTo(positionMillis / 1000);
+      } catch (_) {}
+      set({ positionMs: positionMillis });
+      return;
+    }
     if (sound) {
       sound.seekTo(positionMillis / 1000);
       set({ positionMs: positionMillis });

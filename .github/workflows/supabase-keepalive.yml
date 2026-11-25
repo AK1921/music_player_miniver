@@ -48,3 +48,4 @@ jobs:
           else
             echo "ℹ️ Supabase responded with status ${STATUS_CODE}. Activity registered."
           fi
+
